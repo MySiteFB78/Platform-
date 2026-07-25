@@ -215,22 +215,22 @@
                                 <div>
                                     <label class="block text-xs font-bold text-slate-300 mb-1">مصدر الفيديو</label>
                                     <select id="video-source-type" onchange="toggleVideoSourceInput()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none mb-3">
-                                        <option value="url">إدخال رابط فيديو (YouTube / رابط مباشر)</option>
-                                        <option value="file">رفع ملف فيديو من الجهاز سحابياً (Cloud Storage)</option>
+                                        <option value="url">إدخال رابط فيديو (YouTube / Google Drive / رابط مباشر)</option>
+                                        <option value="file">رفع ملف فيديو من الجهاز (Local File)</option>
                                     </select>
                                 </div>
 
                                 <div id="video-url-container">
-                                    <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو (رابط YouTube أو رابط فيديو مباشر MP4)</label>
-                                    <input type="url" id="teacher-video-url" placeholder="https://www.youtube.com/watch?v=xxxxx أو رابط مباشر" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
-                                    <p class="text-[10px] text-slate-400 mt-1">💡 يفضل استخدام رابط YouTube لضمان عمل الفيديوهات للطلاب على منصة GitHub Pages بدون مشاكل مساحة.</p>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو (YouTube أو Google Drive أو رابط مباشر MP4)</label>
+                                    <input type="url" id="teacher-video-url" placeholder="https://www.youtube.com/... أو رابط Google Drive" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
+                                    <p class="text-[10px] text-slate-400 mt-1">💡 يمكنك إدخال رابط يوتيوب، أو رابط مشاركة Google Drive (تأكد أنه عام لأي شخص يملك الرابط).</p>
                                 </div>
 
                                 <div id="video-file-container" class="hidden">
                                     <div class="border-2 border-dashed border-slate-700 rounded-2xl p-4 text-center hover:border-cyan-500/60 transition-all cursor-pointer relative">
                                         <input type="file" id="teacher-video-file" accept="video/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileLabel('teacher-video-file', 'video-label')">
                                         <i class="fa-solid fa-file-video text-2xl text-neonBlue mb-2"></i>
-                                        <p class="text-xs font-bold text-slate-300" id="video-label">اختيار فيديو من الجهاز للرفع السحابي</p>
+                                        <p class="text-xs font-bold text-slate-300" id="video-label">اختيار فيديو من الجهاز للرفع</p>
                                     </div>
                                 </div>
 
@@ -238,7 +238,7 @@
                                     <div class="border-2 border-dashed border-slate-700 rounded-2xl p-4 text-center hover:border-rose-800/60 transition-all cursor-pointer relative">
                                         <input type="file" id="teacher-pdf-file" accept="application/pdf" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileLabel('teacher-pdf-file', 'pdf-label')">
                                         <i class="fa-solid fa-file-pdf text-2xl text-rose-400 mb-2"></i>
-                                        <p class="text-xs font-bold text-slate-300" id="pdf-label">اختيار ملزمة (PDF) للرفع السحابي - اختياري</p>
+                                        <p class="text-xs font-bold text-slate-300" id="pdf-label">اختيار ملزمة (PDF) للرفع - اختياري</p>
                                     </div>
                                 </div>
 
@@ -427,25 +427,55 @@
             }
         }
 
-        function getEmbedVideoUrl(url) {
-            if (!url) return '';
+        // دالة ذكية لمعالجة وتحويل الروابط (YouTube, Google Drive, Direct URLs) إلى صيغة قابلة للتضمين والعرض
+        function parseVideoUrl(url) {
+            if (!url) return { type: 'iframe', url: '' };
+            let cleanUrl = url.trim();
+
+            // معالجة روابط يوتيوب
             let videoId = '';
-            
-            if (url.includes('youtu.be/')) {
-                videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
-            } else if (url.includes('youtube.com/watch')) {
-                const urlParams = new URLSearchParams(new URL(url).search);
+            if (cleanUrl.includes('youtu.be/')) {
+                videoId = cleanUrl.split('youtu.be/')[1].split('?')[0].split('&')[0];
+            } else if (cleanUrl.includes('youtube.com/watch')) {
+                const urlParams = new URLSearchParams(new URL(cleanUrl).search);
                 videoId = urlParams.get('v');
-            } else if (url.includes('youtube.com/embed/')) {
-                return url;
-            } else if (url.includes('youtube.com/shorts/')) {
-                videoId = url.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
+            } else if (cleanUrl.includes('youtube.com/embed/')) {
+                return { type: 'iframe', url: cleanUrl };
+            } else if (cleanUrl.includes('youtube.com/shorts/')) {
+                videoId = cleanUrl.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
             }
 
             if (videoId) {
-                return `https://www.youtube.com/embed/${videoId}`;
+                return { type: 'iframe', url: `https://www.youtube.com/embed/${videoId}` };
             }
-            return url;
+
+            // معالجة روابط Google Drive
+            if (cleanUrl.includes('drive.google.com')) {
+                let fileId = '';
+                if (cleanUrl.includes('/d/')) {
+                    const parts = cleanUrl.split('/d/');
+                    if (parts[1]) {
+                        fileId = parts[1].split('/')[0];
+                    }
+                } else if (cleanUrl.includes('id=')) {
+                    const match = cleanUrl.match(/id=([^&]+)/);
+                    if (match) {
+                        fileId = match[1];
+                    }
+                }
+
+                if (fileId) {
+                    return { type: 'iframe', url: `https://drive.google.com/file/d/${fileId}/preview` };
+                }
+            }
+
+            // إذا كان رابط فيديو مباشر (MP4 أو غيره)
+            if (cleanUrl.match(/\.(mp4$|webm$|ogg$)/i) || cleanUrl.startsWith('http')) {
+                // إذا لم يكن يوتيوب أو درايف وتم إدخاله كـ URL مباشر، نتحقق إن كان يتطلب iframe أو فيديو مباشر
+                return { type: 'iframe', url: cleanUrl };
+            }
+
+            return { type: 'iframe', url: cleanUrl };
         }
 
         function readFileAsDataURL(file) {
@@ -474,7 +504,7 @@
 
             try {
                 let videoData = null;
-                let isEmbed = false;
+                let isEmbed = true;
 
                 if (sourceType === 'url') {
                     const rawUrl = document.getElementById('teacher-video-url').value.trim();
@@ -484,10 +514,9 @@
                         btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
                         return;
                     }
-                    videoData = getEmbedVideoUrl(rawUrl);
-                    if (videoData.includes('youtube.com/embed')) {
-                        isEmbed = true;
-                    }
+                    const parsed = parseVideoUrl(rawUrl);
+                    videoData = parsed.url;
+                    isEmbed = true;
                 } else {
                     const videoFileInput = document.getElementById('teacher-video-file');
                     if (!videoFileInput.files || !videoFileInput.files[0]) {
@@ -497,6 +526,7 @@
                         return;
                     }
                     videoData = await readFileAsDataURL(videoFileInput.files[0]);
+                    isEmbed = false;
                 }
 
                 let pdfData = '';
@@ -520,13 +550,13 @@
 
                 alert('✅ تم رفع وحفظ الدرس بنجاح!');
                 document.getElementById('add-lesson-form').reset();
-                document.getElementById('video-label').innerText = 'اختيار فيديو من الجهاز للرفع السحابي';
-                document.getElementById('pdf-label').innerText = 'اختيار ملزمة (PDF) للرفع السحابي - اختياري';
+                document.getElementById('video-label').innerText = 'اختيار فيديو من الجهاز للرفع';
+                document.getElementById('pdf-label').innerText = 'اختيار ملزمة (PDF) للرفع - اختياري';
                 toggleVideoSourceInput();
 
             } catch (err) {
                 console.error(err);
-                alert('❌ حدث خطأ أثناء رفع الدرس: ' + err.message);
+                alert('❌ حدث خطأ أثناء رفع الدرس: تأكد من حجم الملف أو الاتصال.');
             } finally {
                 uploadBtn.disabled = false;
                 btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
@@ -573,7 +603,8 @@
             cachedLessons.forEach((lesson) => {
                 let videoElement = '';
                 
-                if (lesson.is_embed) {
+                // التحقق مما إذا كان الفيديو عبارة عن رابط (iframe) أو ملف محلي (video tag)
+                if (lesson.is_embed || lesson.source_type === 'url') {
                     videoElement = `
                         <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800">
                             <iframe src="${lesson.video_data}" class="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -684,4 +715,4 @@
         });
     </script>
 </body>
-</html>
+                        </html>

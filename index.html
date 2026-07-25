@@ -270,73 +270,16 @@
 
     <!-- Script Logic -->
     <script>
-        let isTeacherUnlocked = false;
-
         // إعدادات اتصال Supabase
-        const SUPABASE_URL = 'https://skpenqzmeckoedhjudkm.supabase.co/rest/v1/';
+        const SUPABASE_URL = 'https://skpenqzmeckoedhjudkm.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_X3AGsK844bwH3lEipw-nsw_MZfdFw82';
         
-        let supabaseClient = null;
+        // تهيئة عميل Supabase
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function initCloudDB() {
-            try {
-                if (window.supabase) {
-                    supabaseClient = window.supabase.createClient('https://skpenqzmeckoedhjudkm.supabase.co', SUPABASE_KEY);
-                    // تفعيل التحديث الفوري Realtime للدروس والطلاب
-                    supabaseClient
-                        .channel('public:platform_realtime')
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'lessons' }, payload => {
-                            loadLessons();
-                        })
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, payload => {
-                            loadStudents();
-                        })
-                        .subscribe();
-                }
-            } catch (err) {
-                console.error("Supabase Init Error:", err);
-            }
-        }
-
-        async function saveLessonToDB(lesson) {
-            if (!supabaseClient) throw new Error("Supabase client not initialized");
-            const { data, error } = await supabaseClient.from('lessons').upsert([lesson]);
-            if (error) throw error;
-            return data;
-        }
-
-        async function removeLessonFromDB(id) {
-            if (!supabaseClient) return;
-            const { error } = await supabaseClient.from('lessons').delete().eq('id', id);
-            if (error) alert('خطأ أثناء الحذف: ' + error.message);
-            loadLessons();
-        }
-
-        async function getAllLessonsFromDB() {
-            if (!supabaseClient) return [];
-            const { data, error } = await supabaseClient.from('lessons').select('*').order('id', { ascending: false });
-            if (error) {
-                console.error(error);
-                return [];
-            }
-            return data || [];
-        }
-
-        async function saveStudentToDB(student) {
-            if (!supabaseClient) return;
-            const { error } = await supabaseClient.from('students').upsert([student]);
-            if (error) console.error(error);
-        }
-
-        async function getAllStudentsFromDB() {
-            if (!supabaseClient) return [];
-            const { data, error } = await supabaseClient.from('students').select('*');
-            if (error) {
-                console.error(error);
-                return [];
-            }
-            return data || [];
-        }
+        let isTeacherUnlocked = false;
+        let cachedLessons = [];
+        let cachedStudents = [];
 
         function updateFileLabel(inputId, labelId) {
             const input = document.getElementById(inputId);
@@ -395,20 +338,23 @@
                 return;
             }
 
-            const currentStudents = await getAllStudentsFromDB();
-            const existingStudent = currentStudents.find(s => s.username === username);
+            const existingStudent = cachedStudents.find(s => s.username === username);
             if (existingStudent) {
                 alert('⚠️ اسم المستخدم هذا مستخدم بالفعل، يرجى اختيار اسم آخر.');
                 return;
             }
 
             const newStudent = { fullname, username, grade, email, password };
-            await saveStudentToDB(newStudent);
+            
+            const { error } = await supabaseClient.from('students').insert([newStudent]);
+            if (error) {
+                alert('❌ حدث خطأ أثناء إنشاء الحساب: ' + error.message);
+                return;
+            }
 
             alert('✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.');
             document.getElementById('login-username').value = username;
             toggleAuthMode('login');
-            loadStudents();
         }
 
         async function handleLogin(e) {
@@ -423,8 +369,7 @@
                 return;
             }
 
-            const currentStudents = await getAllStudentsFromDB();
-            const foundStudent = currentStudents.find(s => (s.username === usernameInput || s.email === usernameInput) && s.password === passwordInput);
+            const foundStudent = cachedStudents.find(s => (s.username === usernameInput || s.email === usernameInput) && s.password === passwordInput);
             
             if (foundStudent) {
                 openPlatform(foundStudent.fullname, foundStudent.grade);
@@ -458,8 +403,8 @@
             document.getElementById('display-user-name').innerText = name;
             document.getElementById('display-user-grade').innerText = role;
 
-            loadLessons();
-            loadStudents();
+            renderLessons();
+            renderStudents();
         }
 
         function handleLogout() {
@@ -513,7 +458,7 @@
         }
 
         // ==========================================
-        // إضافة ورفع درس جديد بصورة متوافقة وآمنة
+        // إضافة ورفع درس جديد عبر Supabase
         // ==========================================
         async function addNewLessonFromTeacher(e) {
             e.preventDefault();
@@ -561,28 +506,27 @@
                 }
 
                 const lessonObject = {
-                    id: Date.now().toString(),
                     title: title,
-                    desc: desc,
-                    sourceType: sourceType,
-                    videoData: videoData,
-                    isEmbed: isEmbed,
-                    pdfData: pdfData,
-                    date: new Date().toLocaleDateString('ar-EG')
+                    description: desc,
+                    source_type: sourceType,
+                    video_data: videoData,
+                    is_embed: isEmbed,
+                    pdf_data: pdfData,
+                    lesson_date: new Date().toLocaleDateString('ar-EG')
                 };
 
-                await saveLessonToDB(lessonObject);
+                const { error } = await supabaseClient.from('lessons').insert([lessonObject]);
+                if (error) throw error;
 
                 alert('✅ تم رفع وحفظ الدرس بنجاح!');
                 document.getElementById('add-lesson-form').reset();
                 document.getElementById('video-label').innerText = 'اختيار فيديو من الجهاز للرفع السحابي';
                 document.getElementById('pdf-label').innerText = 'اختيار ملزمة (PDF) للرفع السحابي - اختياري';
                 toggleVideoSourceInput();
-                loadLessons();
 
             } catch (err) {
                 console.error(err);
-                alert('❌ حدث خطأ أثناء معالجة الملف: ' + err.message);
+                alert('❌ حدث خطأ أثناء رفع الدرس: ' + err.message);
             } finally {
                 uploadBtn.disabled = false;
                 btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
@@ -590,46 +534,62 @@
         }
 
         // ==========================================
-        // عرض الدروس وتشغيل الفيديوهات مع الصوت والصورة
+        // جلب البيانات من Supabase
         // ==========================================
-        async function loadLessons() {
-            const lessons = await getAllLessonsFromDB();
-            
+        async function fetchInitialData() {
+            try {
+                const { data: lessonsData } = await supabaseClient.from('lessons').select('*').order('created_at', { ascending: false });
+                if (lessonsData) cachedLessons = lessonsData;
+
+                const { data: studentsData } = await supabaseClient.from('students').select('*');
+                if (studentsData) cachedStudents = studentsData;
+
+                renderLessons();
+                renderStudents();
+            } catch (err) {
+                console.error('خطأ في جلب البيانات من Supabase:', err);
+            }
+        }
+
+        // ==========================================
+        // عرض الدروس وتشغيل الفيديوهات
+        // ==========================================
+        function renderLessons() {
             const grid = document.getElementById('student-lessons-grid');
             const teacherList = document.getElementById('teacher-lessons-list');
             
-            document.getElementById('videos-count-dash').innerText = lessons.length;
-            document.getElementById('teacher-videos-count').innerText = lessons.length;
+            document.getElementById('videos-count-dash').innerText = cachedLessons.length;
+            document.getElementById('teacher-videos-count').innerText = cachedLessons.length;
 
             grid.innerHTML = '';
             teacherList.innerHTML = '';
 
-            if (lessons.length === 0) {
+            if (cachedLessons.length === 0) {
                 grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500 font-bold">لا توجد دروس مرفوعة حالياً.</div>`;
                 teacherList.innerHTML = `<div class="text-center py-4 text-slate-500 text-xs">لا توجد دروس حالياً.</div>`;
                 return;
             }
 
-            lessons.forEach((lesson) => {
+            cachedLessons.forEach((lesson) => {
                 let videoElement = '';
                 
-                if (lesson.isEmbed) {
+                if (lesson.is_embed) {
                     videoElement = `
                         <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800">
-                            <iframe src="${lesson.videoData}" class="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <iframe src="${lesson.video_data}" class="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>`;
                 } else {
                     videoElement = `
                         <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800">
                             <video controls playsinline preload="metadata" class="w-full h-full object-contain">
-                                <source src="${lesson.videoData}">
+                                <source src="${lesson.video_data}">
                                 متصفحك لا يدعم تشغيل هذا الفيديو.
                             </video>
                         </div>`;
                 }
 
-                const pdfButton = lesson.pdfData ? `
-                    <a href="${lesson.pdfData}" download="${lesson.title}.pdf" class="flex-1 bg-rose-950/40 text-rose-400 border border-rose-800/50 hover:bg-rose-900/50 text-xs font-bold py-2.5 rounded-xl text-center transition-all flex items-center justify-center gap-1.5">
+                const pdfButton = lesson.pdf_data ? `
+                    <a href="${lesson.pdf_data}" download="${lesson.title}.pdf" class="flex-1 bg-rose-950/40 text-rose-400 border border-rose-800/50 hover:bg-rose-900/50 text-xs font-bold py-2.5 rounded-xl text-center transition-all flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-file-pdf"></i> تحميل الملزمة
                     </a>` : '';
 
@@ -641,7 +601,7 @@
                         ${videoElement}
                         <div>
                             <h4 class="font-extrabold text-white text-base">${lesson.title}</h4>
-                            <p class="text-xs text-slate-400 mt-1">${lesson.desc || 'لا يوجد وصف متاح'}</p>
+                            <p class="text-xs text-slate-400 mt-1">${lesson.description || 'لا يوجد وصف متاح'}</p>
                         </div>
                     </div>
                     <div class="pt-2 border-t border-slate-800/80 flex items-center gap-2">
@@ -658,7 +618,7 @@
                         <i class="fa-solid fa-video text-neonBlue text-lg"></i>
                         <div>
                             <h5 class="text-xs font-bold text-white">${lesson.title}</h5>
-                            <span class="text-[10px] text-slate-400">${lesson.date || ''}</span>
+                            <span class="text-[10px] text-slate-400">${lesson.lesson_date || ''}</span>
                         </div>
                     </div>
                     <button onclick="deleteLesson('${lesson.id}')" class="text-xs text-rose-400 hover:text-rose-300 p-2 rounded-lg hover:bg-rose-950/30 transition-all">
@@ -671,22 +631,24 @@
 
         async function deleteLesson(id) {
             if (confirm('هل أنت تأكد من رغبتك في حذف هذا الدرس؟')) {
-                await removeLessonFromDB(id);
+                const { error } = await supabaseClient.from('lessons').delete().eq('id', id);
+                if (error) {
+                    alert('❌ حدث خطأ أثناء الحذف: ' + error.message);
+                }
             }
         }
 
-        async function loadStudents() {
-            const students = await getAllStudentsFromDB();
+        function renderStudents() {
             const list = document.getElementById('teacher-students-list');
-            document.getElementById('students-count').innerText = students.length;
+            document.getElementById('students-count').innerText = cachedStudents.length;
 
             list.innerHTML = '';
-            if (students.length === 0) {
+            if (cachedStudents.length === 0) {
                 list.innerHTML = `<p class="text-center text-xs text-slate-500 py-2">لا يوجد طلاب مسجلون حتى الآن.</p>`;
                 return;
             }
 
-            students.forEach(s => {
+            cachedStudents.forEach(s => {
                 const item = document.createElement('div');
                 item.className = "bg-slate-900/50 border border-slate-800/80 p-2.5 rounded-xl flex items-center justify-between text-xs";
                 item.innerHTML = `
@@ -700,15 +662,26 @@
             });
         }
 
+        // ==========================================
+        // التحديث الفوري (Realtime Listener)
+        // ==========================================
+        function setupRealtimeSubscription() {
+            supabaseClient
+                .channel('public-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lessons' }, payload => {
+                    fetchInitialData();
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, payload => {
+                    fetchInitialData();
+                })
+                .subscribe();
+        }
+
         // التهيئة عند تشغيل الصفحة
         window.addEventListener('DOMContentLoaded', async () => {
-            initCloudDB();
-            // جلب البيانات الأولية
-            setTimeout(() => {
-                loadLessons();
-                loadStudents();
-            }, 500);
+            await fetchInitialData();
+            setupRealtimeSubscription();
         });
     </script>
 </body>
-    </html>
+</html>

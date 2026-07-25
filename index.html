@@ -49,7 +49,7 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <h1 class="text-2xl font-black text-white">مرحباً بك في المنصة</h1>
-                <p class="text-xs text-slate-400">سجل دخولك باسم المستخدم أو أنشئ حسابك الجديد</p>
+                <p class="text-xs text-slate-400">سجل دخولك أو أنشئ حسابك للوصول للدروس</p>
             </div>
 
             <!-- أزرار التبويب -->
@@ -61,35 +61,47 @@
             <!-- نموذج تسجيل الدخول -->
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">اسم المستخدم (User)</label>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">اسم المستخدم أو البريد الإلكتروني</label>
                     <input type="text" id="login-username" required placeholder="مثال: teacher أو اسم المستخدم" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
                 </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
+                </div>
                 <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
-                    دخول المنصة <i class="fa-solid fa-arrow-left mr-2"></i>
+                    تسجيل الدخول <i class="fa-solid fa-arrow-left mr-2"></i>
                 </button>
             </form>
 
             <!-- نموذج إنشاء حساب جديد -->
             <form id="signup-form" onsubmit="handleSignUp(event)" class="space-y-4 hidden">
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">الاسم بالكامل (fullname)</label>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">الاسم بالكامل</label>
                     <input type="text" id="signup-fullname" required placeholder="أحمد محمد" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">اسم المستخدم (user)</label>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">اسم المستخدم (للدخول به)</label>
                     <input type="text" id="signup-username" required placeholder="ahmed123" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">تاريخ الميلاد (dop)</label>
-                    <input type="date" id="signup-dop" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
+                    <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+                    <input type="email" id="signup-email" required placeholder="student@example.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">الصف الدراسي (grade)</label>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">الصف الدراسي</label>
                     <select id="signup-grade" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
                         <option value="الأول الثانوي">الصف الأول الثانوي</option>
                         <option value="الثاني الثانوي">الصف الثاني الثانوي</option>
                         <option value="الثالث الثانوي">الصف الثالث الثانوي</option>
                     </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+                    <input type="password" id="signup-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">تأكيد كلمة المرور</label>
+                    <input type="password" id="signup-confirm-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
                 </div>
                 <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/20">
                     إنشاء حساب جديد <i class="fa-solid fa-user-plus mr-2"></i>
@@ -138,7 +150,7 @@
                 <div id="tab-dashboard" class="main-tab-content space-y-6">
                     <div class="bg-gradient-to-r from-cyan-950/40 to-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3">
                         <h3 class="text-xl sm:text-2xl font-black text-white">مرحباً بك في لوحة التعلم الرقمية</h3>
-                        <p class="text-xs sm:text-sm text-slate-400 max-w-xl">يمكنك الانتقال إلى قسم الدروس لمشاهدة المحتوى وتحميل الملازم بصيغة PDF مباشرة.</p>
+                        <p class="text-xs sm:text-sm text-slate-400 max-w-xl">يمكنك الدخول إلى قسم الدروس لمشاهدة الفيديوهات المرفوعة وتحميل الملازم بصيغة PDF مباشرة.</p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -169,7 +181,7 @@
                             <i class="fa-solid fa-lock"></i>
                         </div>
                         <h3 class="text-xl font-black text-white">لوحة المعلم محمية</h3>
-                        <p class="text-xs text-slate-400">يرجى إدخال كلمة المرور الخاصة بمعلم المنصة للوصول لوحة التحكم</p>
+                        <p class="text-xs text-slate-400">يرجى إدخال كلمة المرور الخاصة بمعلم المنصة للوصول لهذه التحكم</p>
                         <form onsubmit="verifyTeacherPassword(event)" class="space-y-3">
                             <input type="password" id="teacher-pass-input" required placeholder="كلمة مرور المعلم" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none text-center">
                             <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
@@ -178,7 +190,7 @@
                         </form>
                     </div>
 
-                    <!-- محتوى لوحة المعلم -->
+                    <!-- محتوى لوحة المعلم (مخفي حتى إدخال كلمة المرور) -->
                     <div id="teacher-dashboard-panel" class="space-y-6 hidden">
                         <div class="flex items-center justify-between bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
                             <span class="text-xs text-emerald-400 font-bold"><i class="fa-solid fa-shield-check mr-1"></i> تم التحقق من هوية المعلم بنجاح</span>
@@ -204,20 +216,21 @@
                                     <label class="block text-xs font-bold text-slate-300 mb-1">مصدر الفيديو</label>
                                     <select id="video-source-type" onchange="toggleVideoSourceInput()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none mb-3">
                                         <option value="url">إدخال رابط فيديو (YouTube / رابط مباشر)</option>
-                                        <option value="file">رفع ملف فيديو من الجهاز سحابياً</option>
+                                        <option value="file">رفع ملف فيديو من الجهاز سحابياً (Cloud Storage)</option>
                                     </select>
                                 </div>
 
                                 <div id="video-url-container">
-                                    <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو</label>
-                                    <input type="url" id="teacher-video-url" placeholder="https://www.youtube.com/watch?v=xxxxx" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو (رابط YouTube أو رابط فيديو مباشر MP4)</label>
+                                    <input type="url" id="teacher-video-url" placeholder="https://www.youtube.com/watch?v=xxxxx أو رابط مباشر" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
+                                    <p class="text-[10px] text-slate-400 mt-1">💡 يفضل استخدام رابط YouTube لضمان عمل الفيديوهات للطلاب على منصة GitHub Pages بدون مشاكل مساحة.</p>
                                 </div>
 
                                 <div id="video-file-container" class="hidden">
                                     <div class="border-2 border-dashed border-slate-700 rounded-2xl p-4 text-center hover:border-cyan-500/60 transition-all cursor-pointer relative">
                                         <input type="file" id="teacher-video-file" accept="video/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileLabel('teacher-video-file', 'video-label')">
                                         <i class="fa-solid fa-file-video text-2xl text-neonBlue mb-2"></i>
-                                        <p class="text-xs font-bold text-slate-300" id="video-label">اختيار فيديو من الجهاز</p>
+                                        <p class="text-xs font-bold text-slate-300" id="video-label">اختيار فيديو من الجهاز للرفع السحابي</p>
                                     </div>
                                 </div>
 
@@ -225,17 +238,17 @@
                                     <div class="border-2 border-dashed border-slate-700 rounded-2xl p-4 text-center hover:border-rose-800/60 transition-all cursor-pointer relative">
                                         <input type="file" id="teacher-pdf-file" accept="application/pdf" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileLabel('teacher-pdf-file', 'pdf-label')">
                                         <i class="fa-solid fa-file-pdf text-2xl text-rose-400 mb-2"></i>
-                                        <p class="text-xs font-bold text-slate-300" id="pdf-label">اختيار ملزمة (PDF) - اختياري</p>
+                                        <p class="text-xs font-bold text-slate-300" id="pdf-label">اختيار ملزمة (PDF) للرفع السحابي - اختياري</p>
                                     </div>
                                 </div>
 
                                 <button type="submit" id="upload-btn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
-                                    <span id="upload-btn-text">رفع وحفظ الدرس</span> <i class="fa-solid fa-upload"></i>
+                                    <span id="upload-btn-text">رفع وحفظ الدرس بشكل دائم</span> <i class="fa-solid fa-upload"></i>
                                 </button>
                             </form>
                         </div>
 
-                        <!-- قائمة الدروس -->
+                        <!-- قائمة الدروس والتحكم في الحذف -->
                         <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
                             <h4 class="font-bold text-white text-sm">الدروس المرفوعة (<span id="teacher-videos-count">0</span>)</h4>
                             <div id="teacher-lessons-list" class="space-y-2"></div>
@@ -244,7 +257,7 @@
                         <!-- الطلاب المسجلون -->
                         <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
                             <h4 class="font-bold text-white text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-users text-neonGreen"></i> الطلاب المسجلون (<span id="students-count">0</span>)
+                                <i class="fa-solid fa-users text-neonGreen"></i> الطلاب المسجلون حديثاً (<span id="students-count">0</span>)
                             </h4>
                             <div id="teacher-students-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                         </div>
@@ -257,61 +270,71 @@
 
     <!-- Script Logic -->
     <script>
-        const SUPABASE_URL = 'https://skpenqzmeckoedhjudkm.supabase.co';
+        let isTeacherUnlocked = false;
+
+        // إعدادات اتصال Supabase
+        const SUPABASE_URL = 'https://skpenqzmeckoedhjudkm.supabase.co/rest/v1/';
         const SUPABASE_KEY = 'sb_publishable_X3AGsK844bwH3lEipw-nsw_MZfdFw82';
         
         let supabaseClient = null;
-        let isTeacherUnlocked = false;
 
-        function initSupabase() {
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                
-                supabaseClient
-                    .channel('public:lessons')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'lessons' }, payload => {
-                        loadLessons();
-                    })
-                    .subscribe();
-
-                supabaseClient
-                    .channel('public:profile')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'profile' }, payload => {
-                        loadStudents();
-                    })
-                    .subscribe();
+        function initCloudDB() {
+            try {
+                if (window.supabase) {
+                    supabaseClient = window.supabase.createClient('https://skpenqzmeckoedhjudkm.supabase.co', SUPABASE_KEY);
+                    // تفعيل التحديث الفوري Realtime للدروس والطلاب
+                    supabaseClient
+                        .channel('public:platform_realtime')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'lessons' }, payload => {
+                            loadLessons();
+                        })
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, payload => {
+                            loadStudents();
+                        })
+                        .subscribe();
+                }
+            } catch (err) {
+                console.error("Supabase Init Error:", err);
             }
         }
 
         async function saveLessonToDB(lesson) {
-            if (!supabaseClient) return;
-            const { error } = await supabaseClient.from('lessons').insert([lesson]);
+            if (!supabaseClient) throw new Error("Supabase client not initialized");
+            const { data, error } = await supabaseClient.from('lessons').upsert([lesson]);
             if (error) throw error;
+            return data;
         }
 
         async function removeLessonFromDB(id) {
             if (!supabaseClient) return;
             const { error } = await supabaseClient.from('lessons').delete().eq('id', id);
             if (error) alert('خطأ أثناء الحذف: ' + error.message);
+            loadLessons();
         }
 
         async function getAllLessonsFromDB() {
             if (!supabaseClient) return [];
             const { data, error } = await supabaseClient.from('lessons').select('*').order('id', { ascending: false });
-            if (error) return [];
+            if (error) {
+                console.error(error);
+                return [];
+            }
             return data || [];
         }
 
-        async function saveProfileToDB(profileData) {
+        async function saveStudentToDB(student) {
             if (!supabaseClient) return;
-            const { error } = await supabaseClient.from('profile').insert([profileData]);
-            if (error) throw error;
+            const { error } = await supabaseClient.from('students').upsert([student]);
+            if (error) console.error(error);
         }
 
-        async function getAllProfilesFromDB() {
+        async function getAllStudentsFromDB() {
             if (!supabaseClient) return [];
-            const { data, error } = await supabaseClient.from('profile').select('*');
-            if (error) return [];
+            const { data, error } = await supabaseClient.from('students').select('*');
+            if (error) {
+                console.error(error);
+                return [];
+            }
             return data || [];
         }
 
@@ -361,57 +384,52 @@
         async function handleSignUp(e) {
             e.preventDefault();
             const fullname = document.getElementById('signup-fullname').value.trim();
-            const user = document.getElementById('signup-username').value.trim();
-            const dop = document.getElementById('signup-dop').value;
+            const username = document.getElementById('signup-username').value.trim();
             const grade = document.getElementById('signup-grade').value;
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
 
-            try {
-                const currentProfiles = await getAllProfilesFromDB();
-                const existingUser = currentProfiles.find(p => p.user === user);
-                if (existingUser) {
-                    alert('⚠️ اسم المستخدم (user) مستخدم بالفعل، اختر اسمًا آخر.');
-                    return;
-                }
-
-                const newProfile = {
-                    fullname: fullname,
-                    user: user,
-                    role: 'student',
-                    dop: dop,
-                    xp: 0,
-                    grade: grade
-                };
-
-                await saveProfileToDB(newProfile);
-
-                alert('✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.');
-                document.getElementById('login-username').value = user;
-                toggleAuthMode('login');
-            } catch (err) {
-                alert('❌ حدث خطأ أثناء التسجيل: ' + err.message);
+            if (password !== confirmPassword) {
+                alert('⚠️ كلمات المرور غير متطابقة!');
+                return;
             }
+
+            const currentStudents = await getAllStudentsFromDB();
+            const existingStudent = currentStudents.find(s => s.username === username);
+            if (existingStudent) {
+                alert('⚠️ اسم المستخدم هذا مستخدم بالفعل، يرجى اختيار اسم آخر.');
+                return;
+            }
+
+            const newStudent = { fullname, username, grade, email, password };
+            await saveStudentToDB(newStudent);
+
+            alert('✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.');
+            document.getElementById('login-username').value = username;
+            toggleAuthMode('login');
+            loadStudents();
         }
 
         async function handleLogin(e) {
             e.preventDefault();
-            const userInput = document.getElementById('login-username').value.trim();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value;
 
-            if (userInput === 'teacher' || userInput === 'F123') {
+            // دخول المعلم
+            if (usernameInput === 'teacher' && passwordInput === 'F123') {
                 isTeacherUnlocked = true;
                 openPlatform('الأستاذ (المعلم)', 'لوحة التحكم الإدارية');
                 return;
             }
 
-            const currentProfiles = await getAllProfilesFromDB();
-            const foundProfile = currentProfiles.find(p => p.user === userInput);
+            const currentStudents = await getAllStudentsFromDB();
+            const foundStudent = currentStudents.find(s => (s.username === usernameInput || s.email === usernameInput) && s.password === passwordInput);
             
-            if (foundProfile) {
-                if (foundProfile.role === 'teacher') {
-                    isTeacherUnlocked = true;
-                }
-                openPlatform(foundProfile.fullname, foundProfile.grade || 'طالب');
+            if (foundStudent) {
+                openPlatform(foundStudent.fullname, foundStudent.grade);
             } else {
-                alert('⚠️ اسم المستخدم غير موجود في قاعدة البيانات!');
+                alert('⚠️ اسم المستخدم أو كلمة المرور غير صحيحة!');
             }
         }
 
@@ -467,6 +485,7 @@
         function getEmbedVideoUrl(url) {
             if (!url) return '';
             let videoId = '';
+            
             if (url.includes('youtu.be/')) {
                 videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
             } else if (url.includes('youtube.com/watch')) {
@@ -477,7 +496,10 @@
             } else if (url.includes('youtube.com/shorts/')) {
                 videoId = url.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
             }
-            if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
             return url;
         }
 
@@ -490,6 +512,9 @@
             });
         }
 
+        // ==========================================
+        // إضافة ورفع درس جديد بصورة متوافقة وآمنة
+        // ==========================================
         async function addNewLessonFromTeacher(e) {
             e.preventDefault();
             const btnText = document.getElementById('upload-btn-text');
@@ -508,10 +533,24 @@
 
                 if (sourceType === 'url') {
                     const rawUrl = document.getElementById('teacher-video-url').value.trim();
+                    if (!rawUrl) {
+                        alert('⚠️ يرجى إدخال رابط الفيديو!');
+                        uploadBtn.disabled = false;
+                        btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
+                        return;
+                    }
                     videoData = getEmbedVideoUrl(rawUrl);
-                    if (videoData.includes('youtube.com/embed')) isEmbed = true;
+                    if (videoData.includes('youtube.com/embed')) {
+                        isEmbed = true;
+                    }
                 } else {
                     const videoFileInput = document.getElementById('teacher-video-file');
+                    if (!videoFileInput.files || !videoFileInput.files[0]) {
+                        alert('⚠️ يرجى اختيار ملف فيديو من جهازك!');
+                        uploadBtn.disabled = false;
+                        btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
+                        return;
+                    }
                     videoData = await readFileAsDataURL(videoFileInput.files[0]);
                 }
 
@@ -522,7 +561,7 @@
                 }
 
                 const lessonObject = {
-                    id: String(Date.now()),
+                    id: Date.now().toString(),
                     title: title,
                     desc: desc,
                     sourceType: sourceType,
@@ -533,19 +572,29 @@
                 };
 
                 await saveLessonToDB(lessonObject);
-                alert('✅ تم رفع الدرس بنجاح!');
+
+                alert('✅ تم رفع وحفظ الدرس بنجاح!');
                 document.getElementById('add-lesson-form').reset();
+                document.getElementById('video-label').innerText = 'اختيار فيديو من الجهاز للرفع السحابي';
+                document.getElementById('pdf-label').innerText = 'اختيار ملزمة (PDF) للرفع السحابي - اختياري';
+                toggleVideoSourceInput();
                 loadLessons();
+
             } catch (err) {
-                alert('❌ حدث خطأ: ' + err.message);
+                console.error(err);
+                alert('❌ حدث خطأ أثناء معالجة الملف: ' + err.message);
             } finally {
                 uploadBtn.disabled = false;
-                btnText.innerText = 'رفع وحفظ الدرس';
+                btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
             }
         }
 
+        // ==========================================
+        // عرض الدروس وتشغيل الفيديوهات مع الصوت والصورة
+        // ==========================================
         async function loadLessons() {
             const lessons = await getAllLessonsFromDB();
+            
             const grid = document.getElementById('student-lessons-grid');
             const teacherList = document.getElementById('teacher-lessons-list');
             
@@ -562,40 +611,72 @@
             }
 
             lessons.forEach((lesson) => {
-                let videoElement = lesson.isEmbed ? 
-                    `<div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800"><iframe src="${lesson.videoData}" class="w-full h-full" allowfullscreen></iframe></div>` :
-                    `<div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800"><video controls class="w-full h-full object-contain"><source src="${lesson.videoData}"></video></div>`;
+                let videoElement = '';
+                
+                if (lesson.isEmbed) {
+                    videoElement = `
+                        <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800">
+                            <iframe src="${lesson.videoData}" class="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>`;
+                } else {
+                    videoElement = `
+                        <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800">
+                            <video controls playsinline preload="metadata" class="w-full h-full object-contain">
+                                <source src="${lesson.videoData}">
+                                متصفحك لا يدعم تشغيل هذا الفيديو.
+                            </video>
+                        </div>`;
+                }
 
-                const pdfButton = lesson.pdfData ? `<a href="${lesson.pdfData}" download="${lesson.title}.pdf" class="flex-1 bg-rose-950/40 text-rose-400 border border-rose-800/50 text-xs font-bold py-2.5 rounded-xl text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-file-pdf"></i> تحميل الملزمة</a>` : '';
+                const pdfButton = lesson.pdfData ? `
+                    <a href="${lesson.pdfData}" download="${lesson.title}.pdf" class="flex-1 bg-rose-950/40 text-rose-400 border border-rose-800/50 hover:bg-rose-900/50 text-xs font-bold py-2.5 rounded-xl text-center transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-file-pdf"></i> تحميل الملزمة
+                    </a>` : '';
 
+                // كارت الطالب
                 const card = document.createElement('div');
                 card.className = "bg-cardBg border border-slate-800 rounded-3xl p-4 space-y-3 flex flex-col justify-between shadow-lg";
                 card.innerHTML = `
-                    <div class="space-y-3">${videoElement}<div><h4 class="font-extrabold text-white text-base">${lesson.title}</h4><p class="text-xs text-slate-400 mt-1">${lesson.desc || ''}</p></div></div>
-                    <div class="pt-2 border-t border-slate-800/80 flex items-center gap-2">${pdfButton}</div>
+                    <div class="space-y-3">
+                        ${videoElement}
+                        <div>
+                            <h4 class="font-extrabold text-white text-base">${lesson.title}</h4>
+                            <p class="text-xs text-slate-400 mt-1">${lesson.desc || 'لا يوجد وصف متاح'}</p>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800/80 flex items-center gap-2">
+                        ${pdfButton}
+                    </div>
                 `;
                 grid.appendChild(card);
 
+                // عنصر لوحة المعلم (للحذف)
                 const item = document.createElement('div');
                 item.className = "bg-slate-900/70 border border-slate-800 p-3 rounded-2xl flex items-center justify-between";
                 item.innerHTML = `
-                    <div class="flex items-center gap-3"><i class="fa-solid fa-video text-neonBlue text-lg"></i><div><h5 class="text-xs font-bold text-white">${lesson.title}</h5><span class="text-[10px] text-slate-400">${lesson.date || ''}</span></div></div>
-                    <button onclick="deleteLesson('${lesson.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-video text-neonBlue text-lg"></i>
+                        <div>
+                            <h5 class="text-xs font-bold text-white">${lesson.title}</h5>
+                            <span class="text-[10px] text-slate-400">${lesson.date || ''}</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteLesson('${lesson.id}')" class="text-xs text-rose-400 hover:text-rose-300 p-2 rounded-lg hover:bg-rose-950/30 transition-all">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 `;
                 teacherList.appendChild(item);
             });
         }
 
         async function deleteLesson(id) {
-            if (confirm('هل أنت متأكد من الحذف؟')) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا الدرس؟')) {
                 await removeLessonFromDB(id);
-                loadLessons();
             }
         }
 
         async function loadStudents() {
-            const profiles = await getAllProfilesFromDB();
-            const students = profiles.filter(p => p.role !== 'teacher');
+            const students = await getAllStudentsFromDB();
             const list = document.getElementById('teacher-students-list');
             document.getElementById('students-count').innerText = students.length;
 
@@ -609,18 +690,25 @@
                 const item = document.createElement('div');
                 item.className = "bg-slate-900/50 border border-slate-800/80 p-2.5 rounded-xl flex items-center justify-between text-xs";
                 item.innerHTML = `
-                    <div><span class="font-bold text-white block">${s.fullname || 'بدون اسم'}</span><span class="text-[10px] text-slate-400">@${s.user || ''} • ${s.grade || ''} • XP: ${s.xp || 0}</span></div>
-                    <span class="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-1 rounded-md border border-cyan-800/50">تاريخ الميلاد: ${s.dop || 'غير محدد'}</span>
+                    <div>
+                        <span class="font-bold text-white block">${s.fullname}</span>
+                        <span class="text-[10px] text-slate-400">@${s.username} • ${s.grade}</span>
+                    </div>
+                    <span class="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-1 rounded-md border border-cyan-800/50">${s.email}</span>
                 `;
                 list.appendChild(item);
             });
         }
 
+        // التهيئة عند تشغيل الصفحة
         window.addEventListener('DOMContentLoaded', async () => {
-            initSupabase();
-            loadLessons();
-            loadStudents();
+            initCloudDB();
+            // جلب البيانات الأولية
+            setTimeout(() => {
+                loadLessons();
+                loadStudents();
+            }, 500);
         });
     </script>
 </body>
-</html>
+    </html>

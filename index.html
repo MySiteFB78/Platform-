@@ -809,7 +809,7 @@
         async function handleLogin(e) {
             e.preventDefault();
             const usernameInput = document.getElementById('login-username').value.trim();
-            const passwordInput = document.getElementById('login-password').value;
+            const passwordInput = document.getElementById('login-password').value.trim();
 
             if (usernameInput === 'teacher' && passwordInput === 'F123') {
                 isTeacherUnlocked = true;
@@ -819,7 +819,16 @@
                 return;
             }
 
-            const foundStudent = cachedStudents.find(s => (s.username === usernameInput || s.email === usernameInput) && s.password === passwordInput);
+            const { data: studentsData } = await supabaseClient.from('students').select('*');
+            if (studentsData) {
+                cachedStudents = studentsData;
+            }
+
+            const foundStudent = cachedStudents.find(s => 
+                (s.username.trim() === usernameInput || s.email.trim() === usernameInput) && 
+                s.password.trim() === passwordInput
+            );
+
             if (foundStudent) {
                 currentLoggedInUserName = foundStudent.fullname;
                 currentLoggedInUserObj = foundStudent;
@@ -956,7 +965,17 @@
                     pdfData = await readFileAsDataURL(pdfFileInput.files[0]);
                 }
 
-                const newLesson = { title, description: desc, video_data: videoData, pdf_data: pdfData };
+                // تضمين جميع الأعمدة المطابقة لقاعدة البيانات لتجنب أي Timeout
+                const newLesson = { 
+                    title, 
+                    description: desc, 
+                    video_data: videoData, 
+                    pdf_data: pdfData,
+                    source_type: sourceType,
+                    is_embed: true,
+                    lesson_date: new Date().toISOString().split('T')[0]
+                };
+
                 const { error } = await supabaseClient.from('lessons').insert([newLesson]);
                 
                 if (error) {
@@ -1152,4 +1171,4 @@
         });
     </script>
 </body>
-    </html>
+                    </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الأستاذ التعليمية - نظام الملفات الضخمة</title>
+    <title>منصة الأستاذ التعليمية - نظام الملفات الضخمة والاختبارات</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -24,7 +24,12 @@
                         neonBlue: '#00f2fe',
                         neonGreen: '#10b981',
                         neonPurple: '#8b5cf6',
+                        neonRose: '#f43f5e',
                         primary: '#4f46e5',
+                        primaryDark: '#4338ca',
+                        danger: '#ef4444',
+                        dangerDark: '#dc2626',
+                        success: '#10b981'
                     },
                     fontFamily: {
                         cairo: ['Cairo', 'sans-serif'],
@@ -39,7 +44,9 @@
 </head>
 <body class="bg-darkBg min-h-screen text-slate-100 flex flex-col justify-between">
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- ========================================== -->
+    <!-- 1. شاشة تسجيل الدخول وإنشاء الحساب -->
+    <!-- ========================================== -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl space-y-6">
             <div class="text-center space-y-2">
@@ -47,7 +54,7 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <h1 class="text-2xl font-black text-white">مرحباً بك في المنصة</h1>
-                <p class="text-xs text-slate-400">سجل دخولك أو أنشئ حسابك للوصول للدروس والملازم</p>
+                <p class="text-xs text-slate-400">سجل دخولك أو أنشئ حسابك للوصول للدروس والملازم والاختبارات</p>
             </div>
 
             <div class="flex border-b border-slate-800">
@@ -55,6 +62,7 @@
                 <button type="button" onclick="toggleAuthMode('signup')" class="flex-1 py-3 text-center border-b-2 border-transparent text-slate-400 font-bold hover:text-slate-200 transition-all">حساب جديد</button>
             </div>
 
+            <!-- نموذج تسجيل الدخول -->
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">اسم المستخدم أو البريد الإلكتروني</label>
@@ -69,6 +77,7 @@
                 </button>
             </form>
 
+            <!-- نموذج إنشاء حساب جديد -->
             <form id="signup-form" onsubmit="handleSignUp(event)" class="space-y-4 hidden">
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">الاسم بالكامل</label>
@@ -94,6 +103,10 @@
                     <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
                     <input type="password" id="signup-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
                 </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">تأكيد كلمة المرور</label>
+                    <input type="password" id="signup-confirm-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonGreen focus:outline-none">
+                </div>
                 <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/20">
                     إنشاء حساب جديد <i class="fa-solid fa-user-plus mr-2"></i>
                 </button>
@@ -101,7 +114,9 @@
         </div>
     </div>
 
-    <!-- واجهة المنصة الرئيسية -->
+    <!-- ========================================== -->
+    <!-- 2. الواجهة الرئيسية للمنصة -->
+    <!-- ========================================== -->
     <div id="main-platform" class="hidden min-h-screen flex flex-col">
         <header class="bg-cardBg border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
             <div class="flex items-center gap-3">
@@ -123,58 +138,270 @@
 
         <div class="flex-1 flex flex-col md:flex-row">
             <aside class="w-full md:w-64 bg-cardBg border-l border-slate-800 p-4 space-y-2">
-                <button type="button" onclick="switchMainTab('lessons')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-neonBlue bg-cyan-950/35 border-r-4 border-neonBlue">
+                <button type="button" id="btn-dashboard" onclick="switchMainTab('dashboard')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-neonBlue bg-cyan-950/30 border-r-4 border-neonBlue">
+                    <i class="fa-solid fa-house"></i> الرئيسية
+                </button>
+                <button type="button" id="btn-lessons" onclick="switchMainTab('lessons')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
                     <i class="fa-solid fa-play"></i> الدروس والملازم الضخمة
                 </button>
-                <button type="button" onclick="switchMainTab('teacher')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
-                    <i class="fa-solid fa-sliders"></i> لوحة رفع الملفات (للمعلم)
+                <button type="button" id="btn-exams" onclick="switchMainTab('exams')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
+                    <i class="fa-solid fa-clipboard-question"></i> اختبارات الطالب
+                </button>
+                <button type="button" id="btn-parent" onclick="switchMainTab('parent')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
+                    <i class="fa-solid fa-user-shield text-emerald-400"></i> متابعة ولي الأمر (تلقائي)
+                </button>
+                <button type="button" id="btn-teacher" onclick="switchMainTab('teacher')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
+                    <i class="fa-solid fa-sliders"></i> لوحة المعلم (رفع الملفات الضخمة)
                 </button>
             </aside>
 
             <main class="flex-1 p-6">
-                <!-- قسم عرض الدروس -->
-                <div id="tab-lessons" class="main-tab-content space-y-6">
+                <!-- تبويب الرئيسية -->
+                <div id="tab-dashboard" class="main-tab-content space-y-6">
+                    <div class="bg-gradient-to-r from-cyan-950/40 to-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3">
+                        <h3 class="text-xl sm:text-2xl font-black text-white">مرحباً بك في لوحة التعلم الرقمية</h3>
+                        <p class="text-xs sm:text-sm text-slate-400 max-w-xl">يمكنك الدخول إلى قسم الدروس لمشاهدة الفيديوهات وتحميل الملفات الضخمة، أو الانتقال لقسم الاختبارات لاختبار مستواك.</p>
+                    </div>
+
+                    <!-- صندوق دردشة المنصة المباشرة -->
+                    <div class="bg-cardBg border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+                        <div class="px-6 py-4 border-b border-slate-800 flex items-center gap-2 text-white font-bold text-sm">
+                            <i class="fa-solid fa-comments text-cyan-400"></i> دردشة المنصة المباشرة
+                        </div>
+                        <div id="platform-chat-messages" class="p-6 min-h-[220px] max-h-[300px] overflow-y-auto space-y-4">
+                            <div class="space-y-1">
+                                <span class="text-xs font-bold text-cyan-400 block">أحمد محمد</span>
+                                <p class="text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 inline-block">يا مستر هو اللينك الجديد بتاع زوم هينزل هنا علطول؟</p>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-slate-800 bg-slate-900/40 flex items-center gap-3">
+                            <button type="button" onclick="sendPlatformChat()" class="bg-gradient-to-r from-cyan-400 to-teal-500 hover:from-cyan-500 hover:to-teal-600 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-cyan-500/20 flex-shrink-0">إرسال</button>
+                            <input type="text" id="platform-chat-input" onkeypress="handleChatKeyPress(event)" placeholder="اكتب سؤالك..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:border-neonBlue focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم عرض الدروس والملفات الضخمة -->
+                <div id="tab-lessons" class="main-tab-content space-y-6 hidden">
                     <div id="active-lesson-container" class="bg-cardBg border border-slate-800 rounded-3xl p-8 text-center space-y-4">
                         <h4 class="text-xl font-black text-white">اختر درساً أو ملزمة لاستعراضها</h4>
                     </div>
                     <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
-                        <h3 class="font-bold text-white text-sm">قائمة الملازم والملفات المرفوعة</h3>
+                        <h3 class="font-bold text-white text-sm">قائمة الملازم والملفات الضخمة المرفوعة</h3>
                         <div id="student-lessons-grid" class="space-y-3"></div>
+                    </div>
+                    <div class="space-y-3 pt-2">
+                        <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-video text-orange-400"></i> حصص البث المباشر عبر Zoom المتاحة
+                        </h3>
+                        <div id="student-zoom-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
                 </div>
 
-                <!-- قسم لوحة المعلم لرفع الملفات الضخمة -->
+                <!-- تبويب اختبارات الطالب -->
+                <div id="tab-exams" class="main-tab-content space-y-6 hidden">
+                    <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 max-w-3xl mx-auto">
+                        <div class="text-center space-y-2 border-b border-slate-800 pb-4">
+                            <h3 class="text-xl sm:text-2xl font-black text-white flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-clipboard-question text-neonBlue"></i> اختبارات المنصة الذكية
+                            </h3>
+                            <p class="text-xs text-slate-400">أجب عن الأسئلة أدناه بدقة ثم قم بتسليم الإجابات لمعرفة نتيجتك وتحديث تقرير المتابعة التلقائي.</p>
+                        </div>
+                        <div id="student-questions-container" class="space-y-4"></div>
+                        <button type="button" onclick="submitExam()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
+                            تسليم الإجابات وإظهار النتيجة <i class="fa-solid fa-check-circle mr-2"></i>
+                        </button>
+                        <div id="result-box" class="hidden p-4 rounded-2xl text-center font-bold text-sm border"></div>
+                    </div>
+                </div>
+
+                <!-- تبويب متابعة ولي الأمر -->
+                <div id="tab-parent" class="main-tab-content space-y-6 hidden">
+                    <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-3xl mx-auto shadow-2xl space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-950/80 border border-emerald-500 flex items-center justify-center text-emerald-400 text-xl font-bold">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-black text-white">لوحة المتابعة التلقائية لولي الأمر</h3>
+                                    <p class="text-xs text-slate-400">تقوم المنصة برصد حضور الطالب ودرجات امتحاناته وتوليد تقييم ذكي تلقائياً.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center space-y-1">
+                                <span class="text-xs text-slate-400 block">حالة الحضور والنشاط</span>
+                                <span class="text-sm font-extrabold text-emerald-400" id="parent-attendance-status"><i class="fa-solid fa-circle-check mr-1"></i> نشط ومنتظم بالمنصة</span>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center space-y-1">
+                                <span class="text-xs text-slate-400 block">آخر نتيجة اختبار</span>
+                                <span class="text-sm font-extrabold text-cyan-400" id="parent-exam-score">لم يتقدم لاختبار بعد</span>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center space-y-1">
+                                <span class="text-xs text-slate-400 block">التقييم الذكي التلقائي</span>
+                                <div id="parent-teacher-rating" class="flex items-center justify-center gap-1 text-amber-400 text-sm mt-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                                <span id="parent-rating-text" class="text-[10px] text-slate-400 block mt-0.5">ممتاز</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-chart-line text-emerald-400"></i> سجل أداء الطالب التلقائي
+                            </h4>
+                            <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs" id="parent-custom-report-box">
+                                <p class="text-slate-400 text-center py-2">جاري رصد تفاعل الطالب...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم لوحة المعلم (نظام الملفات الضخمة + إدارة الاختبارات والبث المباشر) -->
                 <div id="tab-teacher" class="main-tab-content space-y-6 hidden">
-                    <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 max-w-2xl mx-auto">
-                        <h3 class="text-xl font-black text-white flex items-center gap-2">
-                            <i class="fa-solid fa-cloud-arrow-up text-cyan-400"></i> نظام رفع الملفات الضخمة (حتى 100 جيجا)
-                        </h3>
-                        <p class="text-xs text-slate-400">يدعم هذا النظام رفع ملفات PDF الضخمة والفيديوهات العالية الجودة عبر التخزين السحابي الآمن.</p>
-
-                        <form onsubmit="uploadLargeFile(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">عنوان الدرس أو الملزمة</label>
-                                <input type="text" id="t-title" required placeholder="مثال: كتاب الفيزياء الشامل المجلد الأول" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">اختر الملف الضخم (PDF أو فيديو)</label>
-                                <input type="file" id="t-file" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none file:ml-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-950 file:text-cyan-400 hover:file:bg-cyan-900 cursor-pointer">
-                            </div>
-
-                            <!-- شريط تقدم الرفع -->
-                            <div id="progress-container" class="hidden space-y-2">
-                                <div class="flex justify-between text-xs text-slate-400">
-                                    <span id="progress-text">جاري الرفع السحابي... 0%</span>
-                                </div>
-                                <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800 overflow-hidden">
-                                    <div id="progress-bar" class="bg-cyan-400 h-2.5 rounded-full" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <button type="submit" id="upload-btn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
-                                بدء الرفع السحابي وحفظ الدرس <i class="fa-solid fa-upload mr-1"></i>
+                    <div id="teacher-auth-lock" class="bg-cardBg border border-slate-800 rounded-3xl p-8 max-w-md mx-auto text-center space-y-4">
+                        <div class="w-16 h-16 rounded-2xl bg-rose-950/50 border border-rose-500/50 text-rose-400 text-2xl inline-flex items-center justify-center">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-white">لوحة المعلم محمية</h3>
+                        <p class="text-xs text-slate-400">يرجى إدخال كلمة المرور الخاصة بمعلم المنصة</p>
+                        <form onsubmit="verifyTeacherPassword(event)" class="space-y-3">
+                            <input type="password" id="teacher-pass-input" required placeholder="كلمة مرور المعلم" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none text-center">
+                            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
+                                تأكيد الدخول <i class="fa-solid fa-key mr-1"></i>
                             </button>
                         </form>
+                    </div>
+
+                    <div id="teacher-dashboard-panel" class="space-y-6 hidden">
+                        <div class="flex items-center justify-between bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
+                            <span class="text-xs text-emerald-400 font-bold"><i class="fa-solid fa-shield-check mr-1"></i> تم التحقق من هوية المعلم بنجاح</span>
+                            <button onclick="lockTeacherPanel()" class="text-xs text-slate-400 hover:text-rose-400 transition-all"><i class="fa-solid fa-lock mr-1"></i> قفل اللوحة</button>
+                        </div>
+
+                        <!-- أزرار عناصر لوحة المعلم الفرعية -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <button type="button" id="teacher-nav-exams" onclick="switchTeacherSubTab('exams')" class="teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-neonPurple bg-purple-950/40 text-purple-300 transition-all shadow-lg">
+                                <i class="fa-solid fa-clipboard-question"></i> الاختبارات
+                            </button>
+                            <button type="button" id="teacher-nav-zoom" onclick="switchTeacherSubTab('zoom')" class="teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-800 bg-cardBg text-slate-400 hover:text-white transition-all shadow-lg">
+                                <i class="fa-solid fa-video"></i> البث المباشر
+                            </button>
+                            <button type="button" id="teacher-nav-lessons" onclick="switchTeacherSubTab('lessons')" class="teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-800 bg-cardBg text-slate-400 hover:text-white transition-all shadow-lg">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> رفع الملفات الضخمة
+                            </button>
+                        </div>
+
+                        <!-- 1. إدارة أسئلة الاختبار -->
+                        <div id="teacher-sub-exams" class="teacher-sub-content space-y-6">
+                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                                <h3 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-clipboard-question text-purple-400"></i> إنشاء وإدارة أسئلة الاختبارات
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-1">نص السؤال</label>
+                                        <input type="text" id="q-text" placeholder="اكتب السؤال هنا..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonPurple focus:outline-none">
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div><input type="text" id="opt-0" placeholder="الخيار أ" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none"></div>
+                                        <div><input type="text" id="opt-1" placeholder="الخيار ب" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none"></div>
+                                        <div><input type="text" id="opt-2" placeholder="الخيار ج" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none"></div>
+                                        <div><input type="text" id="opt-3" placeholder="الخيار د" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none"></div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-1">الإجابة الصحيحة</label>
+                                        <select id="correct-answer" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonPurple focus:outline-none">
+                                            <option value="0">الخيار الأول</option>
+                                            <option value="1">الخيار الثاني</option>
+                                            <option value="2">الخيار الثالث</option>
+                                            <option value="3">الخيار الرابع</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" onclick="addQuestion()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-purple-600/20">
+                                        حفظ وإضافة السؤال للمنصة <i class="fa-solid fa-plus mr-1"></i>
+                                    </button>
+                                    <p id="teacher-msg" class="text-xs text-emerald-400 font-bold text-center"></p>
+                                </div>
+                                <div class="border-t border-slate-800 pt-4 space-y-3">
+                                    <h4 class="font-bold text-white text-sm">الأسئلة الحالية المضافة (<span id="questions-count-badge">0</span>)</h4>
+                                    <div id="teacher-questions-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. جدولة بث مباشر عبر Zoom -->
+                        <div id="teacher-sub-zoom" class="teacher-sub-content space-y-6 hidden">
+                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                                <h3 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-video text-cyan-400"></i> جدولة بث مباشر جديد عبر Zoom
+                                </h3>
+                                <form id="add-zoom-form" onsubmit="addNewZoomSession(event)" class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-1">عنوان اللقاء المباشر</label>
+                                        <input type="text" id="zoom-title" required placeholder="مثال: مراجعة ليلة الامتحان" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-1">رابط الحصة على تطبيق Zoom</label>
+                                        <input type="url" id="zoom-link" required placeholder="https://us04web.zoom.us/j/..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-1">موعد وتوقيت البث</label>
+                                        <input type="text" id="zoom-time" required placeholder="مثال: اليوم الساعة 8:00 مساءً" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
+                                    </div>
+                                    <button type="submit" id="zoom-btn" class="w-full bg-gradient-to-r from-cyan-400 to-teal-500 hover:from-cyan-500 hover:to-teal-600 text-slate-950 font-black py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
+                                        نشر وجدولة حصة الـ Zoom للطلاب
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
+                                <h4 class="font-bold text-white text-sm">حصص Zoom المجدولة حالياً (<span id="zoom-count">0</span>)</h4>
+                                <div id="teacher-zoom-list" class="space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- 3. نظام رفع الملفات الضخمة (حتى 100 جيجا) -->
+                        <div id="teacher-sub-lessons" class="teacher-sub-content space-y-6 hidden">
+                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                                <h3 class="text-xl font-black text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-cloud-arrow-up text-cyan-400"></i> نظام رفع الملفات الضخمة (حتى 100 جيجا)
+                                </h3>
+                                <p class="text-xs text-slate-400">يدعم هذا النظام رفع ملفات PDF الضخمة والفيديوهات عبر التخزين السحابي الآمن لـ Supabase.</p>
+
+                                <form onsubmit="uploadLargeFile(event)" class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-1">عنوان الدرس أو الملزمة</label>
+                                        <input type="text" id="t-title" required placeholder="مثال: كتاب الفيزياء الشامل المجلد الأول" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-1">اختر الملف الضخم (PDF أو فيديو)</label>
+                                        <input type="file" id="t-file" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none file:ml-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-950 file:text-cyan-400 hover:file:bg-cyan-900 cursor-pointer">
+                                    </div>
+
+                                    <!-- شريط تقدم الرفع -->
+                                    <div id="progress-container" class="hidden space-y-2">
+                                        <div class="flex justify-between text-xs text-slate-400">
+                                            <span id="progress-text">جاري الرفع السحابي... 0%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800 overflow-hidden">
+                                            <div id="progress-bar" class="bg-cyan-400 h-2.5 rounded-full" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" id="upload-btn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
+                                        بدء الرفع السحابي وحفظ الدرس <i class="fa-solid fa-upload mr-1"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- الطلاب المسجلون -->
+                        <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
+                            <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-users text-neonGreen"></i> الطلاب المسجلون (<span id="students-count">0</span>)
+                            </h4>
+                            <div id="teacher-students-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -187,8 +414,240 @@
         const SUPABASE_KEY = 'sb_publishable_X3AGsK844bwH3lEipw-nsw_MZfdFw82';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        let isTeacherUnlocked = false;
         let cachedLessons = [];
+        let cachedZoom = [];
+        let cachedStudents = [];
         let currentLoggedInUserName = 'مستخدم';
+        let currentLoggedInUserObj = null;
+
+        let studentAutoReports = JSON.parse(localStorage.getItem('student_auto_monitoring')) || {};
+        let questions = JSON.parse(localStorage.getItem('platform_questions')) || [
+            {
+                text: "ما هي لغة هيكلة صفحات الويب الأساسية؟",
+                options: ["HTML", "Python", "C++", "Java"],
+                correct: "0"
+            }
+        ];
+
+        function calculateOverallEvaluation(score, total) {
+            const percentage = (score / total) * 100;
+            if (percentage >= 85) return { text: "ممتاز (أداء استثنائي)", stars: 5, color: "text-emerald-400" };
+            if (percentage >= 70) return { text: "جيد جداً (مستوى متميز)", stars: 4, color: "text-cyan-400" };
+            if (percentage >= 50) return { text: "جيد (تحتاج لمزيد من التركيز)", stars: 3, color: "text-amber-400" };
+            return { text: "ضعيف (يجب إعادة مراجعة الدروس)", stars: 2, color: "text-rose-400" };
+        }
+
+        function sendPlatformChat() {
+            const input = document.getElementById('platform-chat-input');
+            const msgText = input.value.trim();
+            if (!msgText) return;
+
+            const chatMessages = document.getElementById('platform-chat-messages');
+            chatMessages.innerHTML += `
+                <div class="space-y-1">
+                    <span class="text-xs font-bold text-cyan-400 block">${currentLoggedInUserName}</span>
+                    <p class="text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 inline-block">${msgText}</p>
+                </div>
+            `;
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleChatKeyPress(e) {
+            if (e.key === 'Enter') sendPlatformChat();
+        }
+
+        function switchTeacherSubTab(subTabName) {
+            document.querySelectorAll('.teacher-sub-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.teacher-sub-btn').forEach(b => {
+                b.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-800 bg-cardBg text-slate-400 hover:text-white transition-all shadow-lg";
+            });
+
+            document.getElementById(`teacher-sub-${subTabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`teacher-nav-${subTabName}`);
+            if (activeBtn) {
+                if (subTabName === 'exams') activeBtn.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-neonPurple bg-purple-950/40 text-purple-300 transition-all shadow-lg";
+                else if (subTabName === 'zoom') activeBtn.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-cyan-500 bg-cyan-950/40 text-cyan-300 transition-all shadow-lg";
+                else activeBtn.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-neonBlue bg-cyan-950/40 text-neonBlue transition-all shadow-lg";
+            }
+        }
+
+        function updateAutomaticParentView() {
+            const box = document.getElementById('parent-custom-report-box');
+            const attendanceEl = document.getElementById('parent-attendance-status');
+            const ratingContainer = document.getElementById('parent-teacher-rating');
+            const ratingText = document.getElementById('parent-rating-text');
+            const parentScoreEl = document.getElementById('parent-exam-score');
+            if (!box || !currentLoggedInUserObj) return;
+
+            const username = currentLoggedInUserObj.username;
+            const studentData = studentAutoReports[username] || { examsTaken: 0, lastScore: 'لم يتقدم لاختبار', attendance: 'نشط ومنتظم بالمنصة', stars: 5, history: [] };
+
+            if (parentScoreEl) parentScoreEl.innerText = studentData.lastScore;
+            if (attendanceEl) attendanceEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ${studentData.attendance}`;
+
+            let starsHTML = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < studentData.stars) starsHTML += `<i class="fa-solid fa-star"></i>`;
+                else starsHTML += `<i class="fa-regular fa-star text-slate-600"></i>`;
+            }
+            if (ratingContainer) ratingContainer.innerHTML = starsHTML;
+            if (ratingText) ratingText.innerText = `تقييم آلي ذكي (${studentData.stars}/5 نجوم)`;
+
+            if (studentData.history.length === 0) {
+                box.innerHTML = `<p class="text-slate-400 text-center py-2">قامت المنصة برصد دخولك. بانتظار إنجازك للاختبارات ليتم إدراج التقرير.</p>`;
+                return;
+            }
+
+            let htmlContent = '';
+            studentData.history.forEach(item => {
+                let repStars = '⭐'.repeat(item.stars || 5);
+                htmlContent += `
+                    <div class="border-b border-slate-800/80 pb-2.5 space-y-1 text-right">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-500">${item.date}</span>
+                            <span class="text-emerald-400 font-bold">النتيجة: ${item.scoreText} - ${repStars}</span>
+                        </div>
+                        <p class="text-slate-300">التحليل التلقائي: ${item.evaluationText}</p>
+                    </div>
+                `;
+            });
+            box.innerHTML = htmlContent;
+        }
+
+        function addQuestion() {
+            const text = document.getElementById('q-text').value.trim();
+            const opts = [0, 1, 2, 3].map(i => document.getElementById(`opt-${i}`).value.trim());
+            const correct = document.getElementById('correct-answer').value;
+
+            if (!text || opts.some(o => !o)) return alert("الرجاء تعبئة نص السؤال وجميع الخيارات الأربعة!");
+
+            questions.push({ text, options: opts, correct });
+            saveAndRefresh();
+            document.getElementById('q-text').value = '';
+            [0, 1, 2, 3].forEach(i => document.getElementById(`opt-${i}`).value = '');
+            const msg = document.getElementById('teacher-msg');
+            msg.textContent = "تم إضافة السؤال بنجاح!";
+            setTimeout(() => msg.textContent = '', 4000);
+        }
+
+        function deleteQuestion(index) {
+            if (confirm("هل أنت متأكد من حذف هذا السؤال؟")) {
+                questions.splice(index, 1);
+                saveAndRefresh();
+            }
+        }
+
+        function saveAndRefresh() {
+            localStorage.setItem('platform_questions', JSON.stringify(questions));
+            loadTeacherQuestions();
+            loadStudentExam();
+        }
+
+        function loadTeacherQuestions() {
+            const listContainer = document.getElementById('teacher-questions-list');
+            const badge = document.getElementById('questions-count-badge');
+            if (!listContainer) return;
+            
+            badge.innerText = questions.length;
+            listContainer.innerHTML = questions.length === 0 ? "<p class='text-xs text-slate-500 text-center py-2'>لا توجد أي أسئلة مضافة حالياً.</p>" : "";
+
+            questions.forEach((q, index) => {
+                listContainer.innerHTML += `
+                    <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
+                        <button type="button" onclick="deleteQuestion(${index})" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
+                        <div>
+                            <p class="font-bold text-white"><strong>السؤال ${index + 1}:</strong> ${q.text}</p>
+                            <span class="text-[10px] text-slate-400">الخيارات: ${q.options.join(' - ')}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function loadStudentExam() {
+            const container = document.getElementById('student-questions-container');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (questions.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-bold">لا توجد اختبارات متاحة حالياً.</div>`;
+                return;
+            }
+
+            questions.forEach((q, qIndex) => {
+                let optionsHTML = '';
+                q.options.forEach((opt, optIndex) => {
+                    optionsHTML += `
+                        <label class="flex items-center justify-end gap-3 bg-slate-900/80 hover:bg-slate-900 border border-slate-800 p-3 rounded-xl cursor-pointer text-xs font-bold text-slate-200 transition-all text-right">
+                            <span>${opt}</span>
+                            <input type="radio" name="question_${qIndex}" value="${optIndex}" class="accent-cyan-400 w-4 h-4">
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="bg-slate-900/40 border border-slate-800/80 p-5 rounded-2xl space-y-3 text-right">
+                        <p class="font-extrabold text-white text-sm">السؤال ${qIndex + 1}: ${q.text}</p>
+                        <div class="space-y-2">${optionsHTML}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function submitExam() {
+            let score = 0;
+            const total = questions.length;
+            if (total === 0) return alert("لا يوجد أسئلة لحلها!");
+
+            questions.forEach((q, qIndex) => {
+                const selected = document.querySelector(`input[name="question_${qIndex}"]:checked`);
+                if (selected && selected.value === q.correct) score++;
+            });
+
+            const resultBox = document.getElementById('result-box');
+            resultBox.classList.remove('hidden');
+            
+            const evaluation = calculateOverallEvaluation(score, total);
+            const percentage = (score / total) * 100;
+
+            resultBox.className = `p-4 rounded-2xl text-center font-bold text-sm border bg-slate-900/90 ${evaluation.color} border-slate-800`;
+            resultBox.innerHTML = `نتيجة الاختبار: ${score} من ${total} (${percentage.toFixed(0)}%)<br><span class="text-xs mt-1 block">التقييم: ${evaluation.text}</span>`;
+
+            if (currentLoggedInUserObj) {
+                const username = currentLoggedInUserObj.username;
+                if (!studentAutoReports[username]) {
+                    studentAutoReports[username] = { examsTaken: 0, lastScore: '', attendance: 'منتظم ومجتهد بالمنصة', stars: 5, history: [] };
+                }
+                const scoreTextFormatted = `${score} / ${total} (${percentage.toFixed(0)}%)`;
+                studentAutoReports[username].lastScore = scoreTextFormatted;
+                studentAutoReports[username].stars = evaluation.stars;
+                studentAutoReports[username].examsTaken += 1;
+                studentAutoReports[username].history.unshift({
+                    scoreText: scoreTextFormatted,
+                    evaluationText: evaluation.text,
+                    stars: evaluation.stars,
+                    date: new Date().toLocaleDateString('ar-EG')
+                });
+                localStorage.setItem('student_auto_monitoring', JSON.stringify(studentAutoReports));
+                updateAutomaticParentView();
+            }
+        }
+
+        function switchMainTab(tabName) {
+            document.querySelectorAll('.main-tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40";
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            if (activeBtn) activeBtn.className = "nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-neonBlue bg-cyan-950/30 border-r-4 border-neonBlue";
+
+            if (tabName === 'exams') loadStudentExam();
+            else if (tabName === 'parent') updateAutomaticParentView();
+        }
 
         function toggleAuthMode(mode) {
             document.getElementById('login-form').classList.toggle('hidden', mode !== 'login');
@@ -202,10 +661,12 @@
             const grade = document.getElementById('signup-grade').value;
             const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
 
+            if (password !== confirmPassword) return alert('⚠️ كلمات المرور غير متطابقة!');
             const { error } = await supabaseClient.from('students').insert([{ fullname, username, grade, email, password }]);
-            if (error) return alert('خطأ: ' + error.message);
-            alert('تم إنشاء الحساب بنجاح!');
+            if (error) return alert('❌ خطأ: ' + error.message);
+            alert('✅ تم إنشاء الحساب بنجاح!');
             toggleAuthMode('login');
         }
 
@@ -215,18 +676,44 @@
             const p = document.getElementById('login-password').value.trim();
 
             if (u === 'teacher' && p === 'F123') {
-                openPlatform('الأستاذ (المعلم)', 'لوحة المعلم');
+                isTeacherUnlocked = true;
+                currentLoggedInUserName = 'الأستاذ (المعلم)';
+                currentLoggedInUserObj = null;
+                openPlatform('الأستاذ (المعلم)', 'لوحة التحكم الإدارية');
                 return;
             }
 
             const { data } = await supabaseClient.from('students').select('*');
-            const student = data?.find(s => (s.username === u || s.email === u) && s.password === p);
+            cachedStudents = data || [];
+            const student = cachedStudents.find(s => (s.username === u || s.email === u) && s.password === p);
+            
             if (student) {
                 currentLoggedInUserName = student.fullname;
+                currentLoggedInUserObj = student;
                 openPlatform(student.fullname, student.grade);
             } else {
-                alert('بيانات الدخول غير صحيحة!');
+                alert('⚠️ بيانات الدخول غير صحيحة!');
             }
+        }
+
+        function verifyTeacherPassword(e) {
+            e.preventDefault();
+            if (document.getElementById('teacher-pass-input').value === 'F123') {
+                isTeacherUnlocked = true;
+                document.getElementById('teacher-auth-lock').classList.add('hidden');
+                document.getElementById('teacher-dashboard-panel').classList.remove('hidden');
+                loadTeacherQuestions();
+                fetchLessons();
+                fetchZoomSessions();
+                fetchStudents();
+            } else {
+                alert('⚠️ كلمة مرور المعلم غير صحيحة!');
+            }
+        }
+
+        function lockTeacherPanel() {
+            document.getElementById('teacher-dashboard-panel').classList.add('hidden');
+            document.getElementById('teacher-auth-lock').classList.remove('hidden');
         }
 
         function openPlatform(name, role) {
@@ -235,22 +722,19 @@
             document.getElementById('display-user-name').innerText = name;
             document.getElementById('display-user-grade').innerText = role;
             fetchLessons();
+            fetchZoomSessions();
+            fetchStudents();
+            loadStudentExam();
+            if (currentLoggedInUserObj) updateAutomaticParentView();
         }
 
         function handleLogout() {
+            currentLoggedInUserObj = null;
             document.getElementById('main-platform').classList.add('hidden');
             document.getElementById('auth-screen').classList.remove('hidden');
         }
 
-        function switchMainTab(tabName) {
-            document.querySelectorAll('.main-tab-content').forEach(c => c.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.className = "nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40";
-            });
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-        }
-
-        // دالة الرفع السحابي المباشر للملفات الضخمة حتى 100 جيجابايت
+        // دالة الرفع السحابي للملفات الضخمة حتى 100 جيجابايت عبر Supabase Storage
         async function uploadLargeFile(e) {
             e.preventDefault();
             const title = document.getElementById('t-title').value.trim();
@@ -269,8 +753,7 @@
             try {
                 const fileName = `${Date.now()}_${file.name}`;
                 
-                // استخدام الرفع السحابي المباشر لـ Supabase Storage (يدعم الملفات الكبيرة)
-                const { data, error } = await supabaseClient.storage
+                const { error } = await supabaseClient.storage
                     .from('platform-files')
                     .upload(fileName, file, {
                         cacheControl: '3600',
@@ -279,18 +762,16 @@
 
                 if (error) throw error;
 
-                // جلب الرابط العام المباشر للملف المرفوع
                 const { data: publicUrlData } = supabaseClient.storage
                     .from('platform-files')
                     .getPublicUrl(fileName);
 
                 const fileUrl = publicUrlData.publicUrl;
 
-                // حفظ رابط الملف في جدول الدروس بقاعدة البيانات
                 const { error: dbError } = await supabaseClient.from('lessons').insert([{
                     title: title,
                     description: 'ملف ضخم مرفوع سحابياً',
-                    video_data: fileUrl, // رابط الملف السحابي المباشر
+                    video_data: fileUrl,
                     pdf_data: fileUrl
                 }]);
 
@@ -318,13 +799,103 @@
             }
         }
 
+        async function fetchZoomSessions() {
+            const { data } = await supabaseClient.from('zoom_sessions').select('*');
+            if (data) {
+                cachedZoom = data;
+                renderZoomSessions();
+            }
+        }
+
+        async function fetchStudents() {
+            const { data } = await supabaseClient.from('students').select('*');
+            if (data) {
+                cachedStudents = data;
+                renderStudents();
+            }
+        }
+
+        async function addNewZoomSession(e) {
+            e.preventDefault();
+            const title = document.getElementById('zoom-title').value.trim();
+            const link = document.getElementById('zoom-link').value.trim();
+            const time = document.getElementById('zoom-time').value.trim();
+
+            const { error } = await supabaseClient.from('zoom_sessions').insert([{ title, link, time }]);
+            if (error) alert('❌ خطأ: ' + error.message);
+            else {
+                alert('✅ تم جدولة الحصة بنجاح!');
+                document.getElementById('add-zoom-form').reset();
+                fetchZoomSessions();
+            }
+        }
+
+        async function deleteZoomSession(id) {
+            if (confirm("هل أنت متأكد من الحذف؟")) {
+                const { error } = await supabaseClient.from('zoom_sessions').delete().eq('id', id);
+                if (error) alert('❌ خطأ: ' + error.message);
+                else fetchZoomSessions();
+            }
+        }
+
+        function renderZoomSessions() {
+            const studentGrid = document.getElementById('student-zoom-grid');
+            const teacherList = document.getElementById('teacher-zoom-list');
+            const zoomCount = document.getElementById('zoom-count');
+            if (zoomCount) zoomCount.innerText = cachedZoom.length;
+
+            if (studentGrid) {
+                studentGrid.innerHTML = cachedZoom.length === 0 ? '<p class="text-xs text-slate-500 col-span-2 text-center">لا توجد حصص بث مباشر حالياً.</p>' : '';
+                cachedZoom.forEach(z => {
+                    studentGrid.innerHTML += `
+                        <div class="bg-cardBg border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <h5 class="font-bold text-white text-sm">${z.title}</h5>
+                                <span class="text-[10px] text-cyan-400 block">${z.time}</span>
+                            </div>
+                            <a href="${z.link}" target="_blank" class="bg-cyan-950/50 text-cyan-400 border border-cyan-800/60 px-4 py-2 rounded-xl text-xs font-bold">دخول الحصة <i class="fa-solid fa-video mr-1"></i></a>
+                        </div>
+                    `;
+                });
+            }
+
+            if (teacherList) {
+                teacherList.innerHTML = cachedZoom.length === 0 ? '<p class="text-xs text-slate-500 text-center">لا توجد حصص مجدولة.</p>' : '';
+                cachedZoom.forEach(z => {
+                    teacherList.innerHTML += `
+                        <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
+                            <button type="button" onclick="deleteZoomSession(${z.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+                            <span class="text-white font-bold">${z.title} (${z.time})</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function renderStudents() {
+            const list = document.getElementById('teacher-students-list');
+            const count = document.getElementById('students-count');
+            if (!list) return;
+            if (count) count.innerText = cachedStudents.length;
+
+            list.innerHTML = cachedStudents.length === 0 ? '<p class="text-xs text-slate-500 text-center">لا توجد تسجيلات طلاب بعد.</p>' : '';
+            cachedStudents.forEach(s => {
+                list.innerHTML += `
+                    <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
+                        <span class="text-slate-400">${s.grade}</span>
+                        <span class="text-white font-bold">${s.fullname} (${s.username})</span>
+                    </div>
+                `;
+            });
+        }
+
         function renderLessonsList() {
             const grid = document.getElementById('student-lessons-grid');
             const activeContainer = document.getElementById('active-lesson-container');
             if (!grid) return;
 
             grid.innerHTML = cachedLessons.length === 0 ? '<p class="text-xs text-slate-500 text-center">لا توجد ملفات مرفوعة بعد.</p>' : '';
-            cachedLessons.forEach((lesson, index) => {
+            cachedLessons.forEach((lesson) => {
                 grid.innerHTML += `
                     <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl flex items-center justify-between text-right">
                         <div>
@@ -348,7 +919,12 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', fetchLessons);
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLessons();
+            fetchZoomSessions();
+            fetchStudents();
+            loadTeacherQuestions();
+        });
     </script>
 </body>
-    </html>
+                    </html>

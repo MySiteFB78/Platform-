@@ -411,7 +411,6 @@
 
                                 <div class="border-t border-slate-800 pt-4 space-y-3">
                                     <h4 class="font-bold text-white text-sm">الأسئلة الحالية المضافة (<span id="questions-count-badge">0</span>)</h4>
-                                    <!-- تم ضبط عنصر القائمة وتفعيل أيقونات الحذف (السلة) والتعديل والإضافة المباشرة لكل الطلاب الحاليين والجدد -->
                                     <div id="teacher-questions-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                                 </div>
                             </div>
@@ -550,7 +549,6 @@
             return { text: "ضعيف (يجب إعادة مراجعة الدروس)", stars: 2, color: "text-rose-400" };
         }
 
-        // دالة إرسال رسالة جديدة للدردشة وحفظها في قاعدة البيانات
         async function sendPlatformChat() {
             const input = document.getElementById('platform-chat-input');
             const msgText = input.value.trim();
@@ -670,7 +668,7 @@
             box.innerHTML = htmlContent;
         }
 
-        // دالة إضافة أو تحديث السؤال بقاعدة بيانات Supabase وتحديثه لكل الطلاب الحاليين والجدد تلقائياً
+        // دالة إضافة أو تحديث السؤال بشكل سليم مع تحديث العرض فوراً للجميع
         async function addOrUpdateQuestion() {
             const text = document.getElementById('q-text').value.trim();
             const opts = [0, 1, 2, 3].map(i => document.getElementById(`opt-${i}`).value.trim());
@@ -680,16 +678,16 @@
             if (!text || opts.some(o => !o)) return alert("الرجاء تعبئة نص السؤال وجميع الخيارات الأربعة!");
 
             if (editingId) {
-                // تحديث السؤال القائم في قاعدة البيانات
+                // تحويل معرف السؤال إلى رقم إن كان مخزناً كـ ID رقمي لضمان المطابقة بقاعدة البيانات
+                const parsedId = !isNaN(editingId) ? Number(editingId) : editingId;
                 const { error } = await supabaseClient
                     .from('platform_questions')
                     .update({ text, options: opts, correct })
-                    .eq('id', editingId);
+                    .eq('id', parsedId);
 
                 if (error) return alert('❌ خطأ في تحديث السؤال: ' + error.message);
                 document.getElementById('teacher-msg').textContent = "تم تعديل السؤال بنجاح وتحديثه لكل الطلاب!";
             } else {
-                // إضافة سؤال جديد بقاعدة البيانات لكل المستخدمين والطلاب الجدد
                 const { error } = await supabaseClient
                     .from('platform_questions')
                     .insert([{ text, options: opts, correct }]);
@@ -703,9 +701,9 @@
             setTimeout(() => document.getElementById('teacher-msg').textContent = '', 4000);
         }
 
-        // تحضير حقول النموذج لتعديل السؤال المختار
+        // دالة تعديل السؤال المختار وعرضه في النموذج
         function editQuestion(id) {
-            const q = cachedQuestions.find(item => item.id === id);
+            const q = cachedQuestions.find(item => String(item.id) === String(id));
             if (!q) return;
 
             document.getElementById('q-text').value = q.text;
@@ -720,7 +718,6 @@
             document.getElementById('q-text').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // إعادة ضبط نموذج الأسئلة لوضع الإضافة العادية
         function resetQuestionForm() {
             document.getElementById('q-text').value = '';
             [0, 1, 2, 3].forEach(i => document.getElementById(`opt-${i}`).value = '');
@@ -732,18 +729,18 @@
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
-        // دالة الحذف (أيقونة السلة delete) المباشرة من قاعدة البيانات لتنعكس فوراً على كل الطلاب
         async function deleteQuestion(id) {
             if (confirm("هل أنت متأكد من حذف هذا السؤال نهائياً من المنصة لكل الطلاب؟")) {
+                const parsedId = !isNaN(id) ? Number(id) : id;
                 const { error } = await supabaseClient
                     .from('platform_questions')
                     .delete()
-                    .eq('id', id);
+                    .eq('id', parsedId);
 
                 if (error) {
                     alert('❌ خطأ في حذف السؤال: ' + error.message);
                 } else {
-                    if (document.getElementById('editing-q-id').value === id) {
+                    if (String(document.getElementById('editing-q-id').value) === String(id)) {
                         resetQuestionForm();
                     }
                     await fetchInitialData();
@@ -767,9 +764,7 @@
                             <span class="text-[10px] text-slate-400">الخيارات: ${q.options.join(' - ')}</span>
                         </div>
                         <div class="flex items-center gap-1.5 flex-shrink-0">
-                            <!-- أيقونة التعديل والإضافة المباشرة -->
                             <button type="button" onclick="editQuestion('${q.id}')" class="text-xs text-amber-400 p-2 rounded-lg hover:bg-amber-950/35 transition-all" title="تعديل السؤال"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <!-- أيقونة السلة Delete لحذف السؤال وتطبيق التأثير فوراً على كل الطلاب والمستخدمين الجدد -->
                             <button type="button" onclick="deleteQuestion('${q.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/35 transition-all" title="حذف بالسلة (Delete)"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
@@ -814,7 +809,7 @@
 
             cachedQuestions.forEach((q, qIndex) => {
                 const selected = document.querySelector(`input[name="question_${qIndex}"]:checked`);
-                if (selected && selected.value === q.correct) score++;
+                if (selected && Number(selected.value) === Number(q.correct)) score++;
             });
 
             const resultBox = document.getElementById('result-box');
@@ -1111,7 +1106,8 @@
 
         async function deleteZoomSession(id) {
             if (confirm("هل أنت متأكد من حذف هذه الحصة المباشرة؟")) {
-                const { error } = await supabaseClient.from('zoom_sessions').delete().eq('id', id);
+                const parsedId = !isNaN(id) ? Number(id) : id;
+                const { error } = await supabaseClient.from('zoom_sessions').delete().eq('id', parsedId);
                 if (error) alert('❌ خطأ في الحذف: ' + error.message);
                 else await fetchInitialData();
             }
@@ -1119,7 +1115,8 @@
 
         async function deleteLesson(id) {
             if (confirm("هل أنت متأكد من حذف هذا الدرس؟")) {
-                const { error } = await supabaseClient.from('lessons').delete().eq('id', id);
+                const parsedId = !isNaN(id) ? Number(id) : id;
+                const { error } = await supabaseClient.from('lessons').delete().eq('id', parsedId);
                 if (error) alert('❌ خطأ في الحذف: ' + error.message);
                 else await fetchInitialData();
             }

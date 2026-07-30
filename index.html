@@ -550,19 +550,61 @@
             return { text: "ضعيف (يجب إعادة مراجعة الدروس)", stars: 2, color: "text-rose-400" };
         }
 
-        function sendPlatformChat() {
+        // دالة إرسال رسالة جديدة للدردشة وحفظها في قاعدة البيانات
+        async function sendPlatformChat() {
             const input = document.getElementById('platform-chat-input');
             const msgText = input.value.trim();
             if (!msgText) return;
 
-            const chatMessages = document.getElementById('platform-chat-messages');
-            chatMessages.innerHTML += `
-                <div class="space-y-1">
-                    <span class="text-xs font-bold text-cyan-400 block">${currentLoggedInUserName}</span>
-                    <p class="text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 inline-block">${msgText}</p>
-                </div>
-            `;
+            // إدخال الرسالة إلى جدول platform_chat في Supabase
+            const { error } = await supabaseClient
+                .from('platform_chat')
+                .insert([{ 
+                    sender_name: currentLoggedInUserName, 
+                    message: msgText 
+                }]);
+
+            if (error) {
+                alert('❌ خطأ في إرسال الرسالة: ' + error.message);
+                return;
+            }
+
             input.value = '';
+            await fetchPlatformChatMessages(); // تحديث الدردشة فوراً بعد الإرسال
+        }
+
+        // دالة جلب وعرض الرسائل من قاعدة البيانات لتظهر لكل الطلاب
+        async function fetchPlatformChatMessages() {
+            const chatMessages = document.getElementById('platform-chat-messages');
+            if (!chatMessages) return;
+
+            const { data: messages, error } = await supabaseClient
+                .from('platform_chat')
+                .select('*')
+                .order('created_at', { ascending: true }); // ترتيب الرسائل من الأقدم للأحدث
+
+            if (error) {
+                console.error('خطأ في جلب الرسائل:', error);
+                return;
+            }
+
+            chatMessages.innerHTML = '';
+            
+            if (!messages || messages.length === 0) {
+                chatMessages.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">لا توجد رسائل سابقة. كن أول المشاركين!</p>`;
+                return;
+            }
+
+            messages.forEach(msg => {
+                chatMessages.innerHTML += `
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-cyan-400 block">${msg.sender_name}</span>
+                        <p class="text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 inline-block">${msg.message}</p>
+                    </div>
+                `;
+            });
+
+            // النزول تلقائياً لآخر رسالة
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
@@ -864,6 +906,7 @@
             renderZoomSessions();
             renderStudents();
             loadStudentExam();
+            fetchPlatformChatMessages(); // استدعاء دالة جلب الرسائل عند فتح المنصة
             if (currentLoggedInUserObj) {
                 updateAutomaticParentView();
             }
@@ -965,7 +1008,6 @@
                     pdfData = await readFileAsDataURL(pdfFileInput.files[0]);
                 }
 
-                // تضمين جميع الأعمدة المطابقة لقاعدة البيانات لتجنب أي Timeout
                 const newLesson = { 
                     title, 
                     description: desc, 
@@ -1042,6 +1084,7 @@
                 renderLessons();
                 renderZoomSessions();
                 renderStudents();
+                await fetchPlatformChatMessages(); // استدعاء دالة جلب وعرض الرسائل داخل البيانات الأولية
             } catch (err) { console.error(err); }
         }
 
@@ -1062,11 +1105,27 @@
                 </a>` : `<div class="w-full bg-slate-900/80 border border-slate-800 rounded-2xl py-3 text-center text-slate-400 text-xs font-bold">لا توجد ملزمة نشطة حالياً</div>`;
         }
 
-        function saveStudentNote() {
+        // دالة حفظ الملاحظة المتفاعلة مع Supabase
+        async function saveStudentNote() {
             const noteText = document.getElementById('student-quick-note').value.trim();
             if (!noteText) return alert('⚠️ يرجى كتابة ملاحظة أولاً!');
-            localStorage.setItem('student_quick_note', noteText);
-            alert('✅ تم حفظ الملاحظة بنجاح!');
+            
+            if (!currentLoggedInUserObj) {
+                alert('⚠️ يجب تسجيل الدخول كطالب لحفظ الملاحظة!');
+                return;
+            }
+
+            const { error } = await supabaseClient.from('student_notes').insert([{
+                student_username: currentLoggedInUserObj.username,
+                note_text: noteText
+            }]);
+
+            if (error) {
+                alert('❌ خطأ في حفظ الملاحظة: ' + error.message);
+            } else {
+                alert('✅ تم حفظ الملاحظة بنجاح وتحديثها في المنصة!');
+                document.getElementById('student-quick-note').value = '';
+            }
         }
 
         function renderLessons() {
@@ -1171,4 +1230,4 @@
         });
     </script>
 </body>
-                    </html>
+</html>

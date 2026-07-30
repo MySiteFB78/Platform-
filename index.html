@@ -411,6 +411,7 @@
 
                                 <div class="border-t border-slate-800 pt-4 space-y-3">
                                     <h4 class="font-bold text-white text-sm">الأسئلة الحالية المضافة (<span id="questions-count-badge">0</span>)</h4>
+                                    <!-- تم ضبط عنصر القائمة وتفعيل أيقونات الحذف (السلة) والتعديل والإضافة المباشرة لكل الطلاب الحاليين والجدد -->
                                     <div id="teacher-questions-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                                 </div>
                             </div>
@@ -669,7 +670,7 @@
             box.innerHTML = htmlContent;
         }
 
-        // دالة إضافة أو تحديث السؤال بقاعدة بيانات Supabase
+        // دالة إضافة أو تحديث السؤال بقاعدة بيانات Supabase وتحديثه لكل الطلاب الحاليين والجدد تلقائياً
         async function addOrUpdateQuestion() {
             const text = document.getElementById('q-text').value.trim();
             const opts = [0, 1, 2, 3].map(i => document.getElementById(`opt-${i}`).value.trim());
@@ -686,15 +687,15 @@
                     .eq('id', editingId);
 
                 if (error) return alert('❌ خطأ في تحديث السؤال: ' + error.message);
-                document.getElementById('teacher-msg').textContent = "تم تعديل السؤال بنجاح!";
+                document.getElementById('teacher-msg').textContent = "تم تعديل السؤال بنجاح وتحديثه لكل الطلاب!";
             } else {
-                // إضافة سؤال جديد بقاعدة البيانات
+                // إضافة سؤال جديد بقاعدة البيانات لكل المستخدمين والطلاب الجدد
                 const { error } = await supabaseClient
                     .from('platform_questions')
                     .insert([{ text, options: opts, correct }]);
 
                 if (error) return alert('❌ خطأ في إضافة السؤال: ' + error.message);
-                document.getElementById('teacher-msg').textContent = "تم إضافة السؤال بنجاح!";
+                document.getElementById('teacher-msg').textContent = "تم إضافة السؤال بنجاح وإتاحته لكل الطلاب الحاليين والجدد!";
             }
 
             await fetchInitialData();
@@ -731,8 +732,9 @@
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
+        // دالة الحذف (أيقونة السلة delete) المباشرة من قاعدة البيانات لتنعكس فوراً على كل الطلاب
         async function deleteQuestion(id) {
-            if (confirm("هل أنت متأكد من حذف هذا السؤال؟")) {
+            if (confirm("هل أنت متأكد من حذف هذا السؤال نهائياً من المنصة لكل الطلاب؟")) {
                 const { error } = await supabaseClient
                     .from('platform_questions')
                     .delete()
@@ -765,8 +767,10 @@
                             <span class="text-[10px] text-slate-400">الخيارات: ${q.options.join(' - ')}</span>
                         </div>
                         <div class="flex items-center gap-1.5 flex-shrink-0">
-                            <button type="button" onclick="editQuestion('${q.id}')" class="text-xs text-amber-400 p-2 rounded-lg hover:bg-amber-950/30 transition-all" title="تعديل السؤال"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button type="button" onclick="deleteQuestion('${q.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30 transition-all" title="حذف السؤال"><i class="fa-solid fa-trash"></i></button>
+                            <!-- أيقونة التعديل والإضافة المباشرة -->
+                            <button type="button" onclick="editQuestion('${q.id}')" class="text-xs text-amber-400 p-2 rounded-lg hover:bg-amber-950/35 transition-all" title="تعديل السؤال"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <!-- أيقونة السلة Delete لحذف السؤال وتطبيق التأثير فوراً على كل الطلاب والمستخدمين الجدد -->
+                            <button type="button" onclick="deleteQuestion('${q.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/35 transition-all" title="حذف بالسلة (Delete)"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -1283,4 +1287,4 @@
         });
     </script>
 </body>
-</html>
+    </html>

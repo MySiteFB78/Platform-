@@ -358,11 +358,14 @@
                         <!-- 1. محتوى إدارة أسئلة الاختبار -->
                         <div id="teacher-sub-exams" class="teacher-sub-content space-y-6">
                             <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-                                <h3 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                                <h3 id="question-form-title" class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
                                     <i class="fa-solid fa-clipboard-question text-purple-400"></i> إنشاء وإدارة أسئلة الاختبارات
                                 </h3>
 
                                 <div class="space-y-4">
+                                    <!-- حقل مخفي لتخزين معرف السؤال عند التعديل -->
+                                    <input type="hidden" id="editing-q-id" value="">
+
                                     <div>
                                         <label class="block text-xs font-bold text-slate-300 mb-1">نص السؤال</label>
                                         <input type="text" id="q-text" placeholder="اكتب السؤال هنا..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonPurple focus:outline-none">
@@ -397,8 +400,11 @@
                                         </select>
                                     </div>
 
-                                    <button type="button" onclick="addQuestion()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-purple-600/20">
+                                    <button type="button" id="save-question-btn" onclick="addOrUpdateQuestion()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-purple-600/20">
                                         حفظ وإضافة السؤال للمنصة <i class="fa-solid fa-plus mr-1"></i>
+                                    </button>
+                                    <button type="button" id="cancel-edit-btn" onclick="resetQuestionForm()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-xl text-xs transition-all hidden">
+                                        إلغاء التعديل
                                     </button>
                                     <p id="teacher-msg" class="text-xs text-emerald-400 font-bold text-center"></p>
                                 </div>
@@ -529,18 +535,11 @@
         let cachedLessons = [];
         let cachedZoom = [];
         let cachedStudents = [];
+        let cachedQuestions = [];
         let currentLoggedInUserName = 'مستخدم';
         let currentLoggedInUserObj = null;
 
         let studentAutoReports = JSON.parse(localStorage.getItem('student_auto_monitoring')) || {};
-
-        let questions = JSON.parse(localStorage.getItem('platform_questions')) || [
-            {
-                text: "ما هي لغة هيكلة صفحات الويب الأساسية؟",
-                options: ["HTML", "Python", "C++", "Java"],
-                correct: "0"
-            }
-        ];
 
         function calculateOverallEvaluation(score, total) {
             const percentage = (score / total) * 100;
@@ -556,7 +555,6 @@
             const msgText = input.value.trim();
             if (!msgText) return;
 
-            // إدخال الرسالة إلى جدول platform_chat في Supabase
             const { error } = await supabaseClient
                 .from('platform_chat')
                 .insert([{ 
@@ -570,10 +568,9 @@
             }
 
             input.value = '';
-            await fetchPlatformChatMessages(); // تحديث الدردشة فوراً بعد الإرسال
+            await fetchPlatformChatMessages();
         }
 
-        // دالة جلب وعرض الرسائل من قاعدة البيانات لتظهر لكل الطلاب
         async function fetchPlatformChatMessages() {
             const chatMessages = document.getElementById('platform-chat-messages');
             if (!chatMessages) return;
@@ -581,7 +578,7 @@
             const { data: messages, error } = await supabaseClient
                 .from('platform_chat')
                 .select('*')
-                .order('created_at', { ascending: true }); // ترتيب الرسائل من الأقدم للأحدث
+                .order('created_at', { ascending: true });
 
             if (error) {
                 console.error('خطأ في جلب الرسائل:', error);
@@ -604,7 +601,6 @@
                 `;
             });
 
-            // النزول تلقائياً لآخر رسالة
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
@@ -673,33 +669,84 @@
             box.innerHTML = htmlContent;
         }
 
-        function addQuestion() {
+        // دالة إضافة أو تحديث السؤال بقاعدة بيانات Supabase
+        async function addOrUpdateQuestion() {
             const text = document.getElementById('q-text').value.trim();
             const opts = [0, 1, 2, 3].map(i => document.getElementById(`opt-${i}`).value.trim());
             const correct = document.getElementById('correct-answer').value;
+            const editingId = document.getElementById('editing-q-id').value;
 
             if (!text || opts.some(o => !o)) return alert("الرجاء تعبئة نص السؤال وجميع الخيارات الأربعة!");
 
-            questions.push({ text, options: opts, correct });
-            saveAndRefresh();
+            if (editingId) {
+                // تحديث السؤال القائم في قاعدة البيانات
+                const { error } = await supabaseClient
+                    .from('platform_questions')
+                    .update({ text, options: opts, correct })
+                    .eq('id', editingId);
+
+                if (error) return alert('❌ خطأ في تحديث السؤال: ' + error.message);
+                document.getElementById('teacher-msg').textContent = "تم تعديل السؤال بنجاح!";
+            } else {
+                // إضافة سؤال جديد بقاعدة البيانات
+                const { error } = await supabaseClient
+                    .from('platform_questions')
+                    .insert([{ text, options: opts, correct }]);
+
+                if (error) return alert('❌ خطأ في إضافة السؤال: ' + error.message);
+                document.getElementById('teacher-msg').textContent = "تم إضافة السؤال بنجاح!";
+            }
+
+            await fetchInitialData();
+            resetQuestionForm();
+            setTimeout(() => document.getElementById('teacher-msg').textContent = '', 4000);
+        }
+
+        // تحضير حقول النموذج لتعديل السؤال المختار
+        function editQuestion(id) {
+            const q = cachedQuestions.find(item => item.id === id);
+            if (!q) return;
+
+            document.getElementById('q-text').value = q.text;
+            [0, 1, 2, 3].forEach(i => document.getElementById(`opt-${i}`).value = q.options[i]);
+            document.getElementById('correct-answer').value = q.correct;
+            document.getElementById('editing-q-id').value = q.id;
+
+            document.getElementById('question-form-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400"></i> تعديل السؤال`;
+            document.getElementById('save-question-btn').innerHTML = `حفظ التعديلات <i class="fa-solid fa-save mr-1"></i>`;
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            document.getElementById('q-text').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // إعادة ضبط نموذج الأسئلة لوضع الإضافة العادية
+        function resetQuestionForm() {
             document.getElementById('q-text').value = '';
             [0, 1, 2, 3].forEach(i => document.getElementById(`opt-${i}`).value = '');
-            const msg = document.getElementById('teacher-msg');
-            msg.textContent = "تم إضافة السؤال بنجاح!";
-            setTimeout(() => msg.textContent = '', 4000);
+            document.getElementById('correct-answer').value = "0";
+            document.getElementById('editing-q-id').value = "";
+
+            document.getElementById('question-form-title').innerHTML = `<i class="fa-solid fa-clipboard-question text-purple-400"></i> إنشاء وإدارة أسئلة الاختبارات`;
+            document.getElementById('save-question-btn').innerHTML = `حفظ وإضافة السؤال للمنصة <i class="fa-solid fa-plus mr-1"></i>`;
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
-        function deleteQuestion(index) {
+        async function deleteQuestion(id) {
             if (confirm("هل أنت متأكد من حذف هذا السؤال؟")) {
-                questions.splice(index, 1);
-                saveAndRefresh();
-            }
-        }
+                const { error } = await supabaseClient
+                    .from('platform_questions')
+                    .delete()
+                    .eq('id', id);
 
-        function saveAndRefresh() {
-            localStorage.setItem('platform_questions', JSON.stringify(questions));
-            loadTeacherQuestions();
-            loadStudentExam();
+                if (error) {
+                    alert('❌ خطأ في حذف السؤال: ' + error.message);
+                } else {
+                    if (document.getElementById('editing-q-id').value === id) {
+                        resetQuestionForm();
+                    }
+                    await fetchInitialData();
+                }
+            }
         }
 
         function loadTeacherQuestions() {
@@ -707,16 +754,19 @@
             const badge = document.getElementById('questions-count-badge');
             if (!listContainer) return;
             
-            badge.innerText = questions.length;
-            listContainer.innerHTML = questions.length === 0 ? "<p class='text-xs text-slate-500 text-center py-2'>لا توجد أي أسئلة مضافة حالياً.</p>" : "";
+            badge.innerText = cachedQuestions.length;
+            listContainer.innerHTML = cachedQuestions.length === 0 ? "<p class='text-xs text-slate-500 text-center py-2'>لا توجد أي أسئلة مضافة حالياً.</p>" : "";
 
-            questions.forEach((q, index) => {
+            cachedQuestions.forEach((q, index) => {
                 listContainer.innerHTML += `
                     <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                        <button type="button" onclick="deleteQuestion(${index})" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
-                        <div>
+                        <div class="flex-1 pl-2">
                             <p class="font-bold text-white"><strong>السؤال ${index + 1}:</strong> ${q.text}</p>
                             <span class="text-[10px] text-slate-400">الخيارات: ${q.options.join(' - ')}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <button type="button" onclick="editQuestion('${q.id}')" class="text-xs text-amber-400 p-2 rounded-lg hover:bg-amber-950/30 transition-all" title="تعديل السؤال"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button type="button" onclick="deleteQuestion('${q.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30 transition-all" title="حذف السؤال"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -728,12 +778,12 @@
             if (!container) return;
             container.innerHTML = '';
             
-            if (questions.length === 0) {
+            if (cachedQuestions.length === 0) {
                 container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-bold">لا توجد اختبارات متاحة حالياً.</div>`;
                 return;
             }
 
-            questions.forEach((q, qIndex) => {
+            cachedQuestions.forEach((q, qIndex) => {
                 let optionsHTML = '';
                 q.options.forEach((opt, optIndex) => {
                     optionsHTML += `
@@ -755,10 +805,10 @@
 
         function submitExam() {
             let score = 0;
-            const total = questions.length;
+            const total = cachedQuestions.length;
             if (total === 0) return alert("لا يوجد أسئلة لحلها!");
 
-            questions.forEach((q, qIndex) => {
+            cachedQuestions.forEach((q, qIndex) => {
                 const selected = document.querySelector(`input[name="question_${qIndex}"]:checked`);
                 if (selected && selected.value === q.correct) score++;
             });
@@ -906,7 +956,8 @@
             renderZoomSessions();
             renderStudents();
             loadStudentExam();
-            fetchPlatformChatMessages(); // استدعاء دالة جلب الرسائل عند فتح المنصة
+            loadTeacherQuestions();
+            fetchPlatformChatMessages();
             if (currentLoggedInUserObj) {
                 updateAutomaticParentView();
             }
@@ -1081,10 +1132,15 @@
                 const { data: studentsData } = await supabaseClient.from('students').select('*');
                 if (studentsData) cachedStudents = studentsData;
 
+                const { data: questionsData } = await supabaseClient.from('platform_questions').select('*').order('created_at', { ascending: true });
+                if (questionsData) cachedQuestions = questionsData;
+
                 renderLessons();
                 renderZoomSessions();
                 renderStudents();
-                await fetchPlatformChatMessages(); // استدعاء دالة جلب وعرض الرسائل داخل البيانات الأولية
+                loadStudentExam();
+                loadTeacherQuestions();
+                await fetchPlatformChatMessages();
             } catch (err) { console.error(err); }
         }
 
@@ -1105,7 +1161,6 @@
                 </a>` : `<div class="w-full bg-slate-900/80 border border-slate-800 rounded-2xl py-3 text-center text-slate-400 text-xs font-bold">لا توجد ملزمة نشطة حالياً</div>`;
         }
 
-        // دالة حفظ الملاحظة المتفاعلة مع Supabase
         async function saveStudentNote() {
             const noteText = document.getElementById('student-quick-note').value.trim();
             if (!noteText) return alert('⚠️ يرجى كتابة ملاحظة أولاً!');
@@ -1155,11 +1210,11 @@
                 cachedLessons.forEach((lesson) => {
                     teacherList.innerHTML += `
                         <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                            <button type="button" onclick="deleteLesson('${lesson.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
                             <div>
                                 <span class="font-bold text-white">${lesson.title}</span>
                                 <span class="text-[10px] text-slate-400 block">${lesson.description || ''}</span>
                             </div>
+                            <button type="button" onclick="deleteLesson('${lesson.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     `;
                 });
@@ -1195,11 +1250,11 @@
                 cachedZoom.forEach(z => {
                     teacherList.innerHTML += `
                         <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                            <button type="button" onclick="deleteZoomSession('${z.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
                             <div>
                                 <span class="font-bold text-white">${z.title}</span>
                                 <span class="text-[10px] text-cyan-400 block">${z.time}</span>
                             </div>
+                            <button type="button" onclick="deleteZoomSession('${z.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     `;
                 });
@@ -1215,8 +1270,8 @@
                 cachedStudents.forEach(s => {
                     teacherStudentsList.innerHTML += `
                         <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                            <span class="text-neonBlue">${s.grade}</span>
                             <span class="text-white font-bold">${s.fullname} (${s.username})</span>
+                            <span class="text-neonBlue">${s.grade}</span>
                         </div>
                     `;
                 });
@@ -1225,8 +1280,6 @@
 
         window.addEventListener('DOMContentLoaded', async () => {
             await fetchInitialData();
-            loadStudentExam();
-            loadTeacherQuestions();
         });
     </script>
 </body>

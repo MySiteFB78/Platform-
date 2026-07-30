@@ -143,10 +143,10 @@
                     <i class="fa-solid fa-house"></i> الرئيسية
                 </button>
                 <button type="button" id="btn-lessons" onclick="switchMainTab('lessons')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
-                    <i class="fa-solid fa-play"></i> الدروس والملازم
+                    <i class="fa-solid fa-play"></i> الدروس والملازم والملاحظات
                 </button>
                 <button type="button" id="btn-exams" onclick="switchMainTab('exams')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
-                    <i class="fa-solid fa-clipboard-question"></i> اختبارات الطالب
+                    <i class="fa-solid fa-clipboard-question"></i> اختبارات الطالب (دائم)
                 </button>
                 <button type="button" id="btn-parent" onclick="switchMainTab('parent')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40">
                     <i class="fa-solid fa-user-shield text-emerald-400"></i> متابعة ولي الأمر (تلقائي)
@@ -161,19 +161,7 @@
                 <div id="tab-dashboard" class="main-tab-content space-y-6">
                     <div class="bg-gradient-to-r from-cyan-950/40 to-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3">
                         <h3 class="text-xl sm:text-2xl font-black text-white">مرحباً بك في لوحة التعلم الرقمية</h3>
-                        <p class="text-xs sm:text-sm text-slate-400 max-w-xl">يمكنك الدخول إلى قسم الدروس لمشاهدة الفيديوهات وتحميل الملازم، أو الانتقال لقسم الاختبارات لاختبار مستواك.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
-                            <div>
-                                <p class="text-xs text-slate-400">إجمالي الدروس المتاحة</p>
-                                <h4 class="text-2xl font-black text-white mt-1" id="videos-count-dash">0</h4>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-cyan-950 text-neonBlue border border-cyan-800 flex items-center justify-center text-xl">
-                                <i class="fa-solid fa-file-video"></i>
-                            </div>
-                        </div>
+                        <p class="text-xs sm:text-sm text-slate-400 max-w-xl">يمكنك الدخول إلى قسم الدروس لمشاهدة الفيديوهات وتدوين ملاحظاتك الدائمة، أو الانتقال لقسم الاختبارات لاختبار مستواك.</p>
                     </div>
 
                     <!-- صندوق دردشة المنصة المباشرة -->
@@ -182,12 +170,7 @@
                             <i class="fa-solid fa-comments text-cyan-400"></i> دردشة المنصة المباشرة
                         </div>
                         
-                        <div id="platform-chat-messages" class="p-6 min-h-[220px] max-h-[300px] overflow-y-auto space-y-4">
-                            <div class="space-y-1">
-                                <span class="text-xs font-bold text-cyan-400 block">أحمد محمد</span>
-                                <p class="text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 inline-block">يا مستر هو اللينك الجديد بتاع زوم هينزل هنا علطول؟</p>
-                            </div>
-                        </div>
+                        <div id="platform-chat-messages" class="p-6 min-h-[220px] max-h-[300px] overflow-y-auto space-y-4"></div>
 
                         <div class="p-4 border-t border-slate-800 bg-slate-900/40 flex items-center gap-3">
                             <button type="button" onclick="sendPlatformChat()" class="bg-gradient-to-r from-cyan-400 to-teal-500 hover:from-cyan-500 hover:to-teal-600 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-cyan-500/20 flex-shrink-0">
@@ -215,7 +198,6 @@
                             <h4 class="font-bold text-white text-sm flex items-center gap-2">
                                 <i class="fa-solid fa-folder-open text-amber-400"></i> ملخص وكبسولة الدرس (PDF)
                             </h4>
-                            <p class="text-xs text-slate-400 leading-relaxed">يمكنك فتح واستعراض أو تحميل ملخص وملزمة الشرح بصيغة PDF المرفقة بهذا الدرس.</p>
                             <div id="active-lesson-pdf-box">
                                 <div class="w-full bg-slate-900/80 border border-slate-800 rounded-2xl py-3 text-center text-slate-400 text-xs font-bold flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-file-pdf"></i> لا توجد ملزمة نشطة حالياً
@@ -223,13 +205,14 @@
                             </div>
                         </div>
 
+                        <!-- مفكرة الملاحظات السريعة (تظهر بشكل دائم ومربوطة بـ Supabase لكل الطلاب) -->
                         <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
                             <h4 class="font-bold text-white text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-note-sticky text-amber-400"></i> مفكرة الملاحظات السريعة
+                                <i class="fa-solid fa-note-sticky text-amber-400"></i> مفكرة الملاحظات السريعة (دائمة)
                             </h4>
-                            <textarea id="student-quick-note" rows="3" placeholder="اكتب ملاحظاتك هنا أثناء سماع الفيديو..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none resize-none"></textarea>
+                            <textarea id="student-quick-note" rows="3" placeholder="اكتب ملاحظاتك هنا لحفظها بشكل دائم في حسابك..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none resize-none"></textarea>
                             <button type="button" onclick="saveStudentNote()" class="w-full bg-emerald-950/40 text-emerald-400 border border-emerald-800/50 hover:bg-emerald-900/50 text-xs font-bold py-2.5 rounded-xl text-center transition-all">
-                                حفظ الملاحظة
+                                حفظ الملاحظة الدائمة
                             </button>
                         </div>
                     </div>
@@ -239,29 +222,24 @@
                             <i class="fa-solid fa-list text-neonBlue"></i> قائمة الدروس المرفوعة
                         </h3>
                         <div id="student-lessons-grid" class="text-center py-4 text-slate-500 text-xs font-bold">
-                            لم يقم المعلم بنشر أي دروس بعد.
+                            جاري جلب الدروس...
                         </div>
-                    </div>
-                    
-                    <div class="space-y-3 pt-2">
-                        <h3 class="text-base font-extrabold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-video text-orange-400"></i> حصص البث المباشر عبر Zoom المتاحة
-                        </h3>
-                        <div id="student-zoom-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
                 </div>
 
-                <!-- تبويب اختبارات الطالب -->
+                <!-- تبويب اختبارات الطالب (تظهر بشكل دائم لجميع الطلاب) -->
                 <div id="tab-exams" class="main-tab-content space-y-6 hidden">
                     <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 max-w-3xl mx-auto">
                         <div class="text-center space-y-2 border-b border-slate-800 pb-4">
                             <h3 class="text-xl sm:text-2xl font-black text-white flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-clipboard-question text-neonBlue"></i> اختبارات المنصة الذكية
+                                <i class="fa-solid fa-clipboard-question text-neonBlue"></i> اختبارات المنصة الذكية المتاحة
                             </h3>
-                            <p class="text-xs text-slate-400">أجب عن الأسئلة أدناه بدقة ثم قم بتسليم الإجابات لمعرفة نتيجتك الفورية وتحديث تقرير المتابعة التلقائي.</p>
+                            <p class="text-xs text-slate-400">هذه الاختبارات تظهر لكل الطلاب بشكل دائم ومباشر. أجب عن الأسئلة بدقة لتسجيل نتيجتك التلقائية.</p>
                         </div>
 
-                        <div id="student-questions-container" class="space-y-4"></div>
+                        <div id="student-questions-container" class="space-y-4">
+                            <p class="text-center text-xs text-slate-500 py-4">جاري تحميل الأسئلة...</p>
+                        </div>
 
                         <button type="button" onclick="submitExam()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
                             تسليم الإجابات وإظهار النتيجة <i class="fa-solid fa-check-circle mr-2"></i>
@@ -271,7 +249,7 @@
                     </div>
                 </div>
 
-                <!-- تبويب لوحة متابعة ولي الأمر (تلقائي بالكامل) -->
+                <!-- تبويب متابعة ولي الأمر -->
                 <div id="tab-parent" class="main-tab-content space-y-6 hidden">
                     <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-3xl mx-auto shadow-2xl space-y-6">
                         <div class="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -281,7 +259,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-black text-white">لوحة المتابعة التلقائية لولي الأمر</h3>
-                                    <p class="text-xs text-slate-400">تقوم المنصة برصد ومتابعة حضور الطالب، درجات امتحاناته، وتوليد تقييم ذكي تلقائياً فوراً.</p>
+                                    <p class="text-xs text-slate-400">تقوم المنصة برصد ومتابعة حضور الطالب ودرجات امتحاناته وتقييمه الآلي.</p>
                                 </div>
                             </div>
                         </div>
@@ -289,31 +267,18 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center space-y-1">
                                 <span class="text-xs text-slate-400 block">حالة الحضور والنشاط</span>
-                                <span class="text-sm font-extrabold text-emerald-400" id="parent-attendance-status"><i class="fa-solid fa-circle-check mr-1"></i> نشط ومنتظم بالمنصة</span>
+                                <span class="text-sm font-extrabold text-emerald-400" id="parent-attendance-status"><i class="fa-solid fa-circle-check mr-1"></i> نشط ومنتظم</span>
                             </div>
                             <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center space-y-1">
                                 <span class="text-xs text-slate-400 block">آخر نتيجة اختبار</span>
                                 <span class="text-sm font-extrabold text-cyan-400" id="parent-exam-score">لم يتقدم لاختبار بعد</span>
                             </div>
                             <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center space-y-1">
-                                <span class="text-xs text-slate-400 block">التقييم الذكي التلقائي</span>
+                                <span class="text-xs text-slate-400 block">التقييم الذكي</span>
                                 <div id="parent-teacher-rating" class="flex items-center justify-center gap-1 text-amber-400 text-sm mt-1">
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                                 </div>
-                                <span id="parent-rating-text" class="text-[10px] text-slate-400 block mt-0.5">ممتاز (بناءً على نشاط المنصة)</span>
-                            </div>
-                        </div>
-
-                        <div class="space-y-3">
-                            <h4 class="font-bold text-white text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-chart-line text-emerald-400"></i> سجل أداء الطالب التلقائي (توليد المنصة الذكي)
-                            </h4>
-                            <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs" id="parent-custom-report-box">
-                                <p class="text-slate-400 text-center py-2">جاري رصد تفاعل الطالب وتقديم تقارير المتابعة الآلية...</p>
+                                <span id="parent-rating-text" class="text-[10px] text-slate-400 block mt-0.5">ممتاز</span>
                             </div>
                         </div>
                     </div>
@@ -321,198 +286,42 @@
 
                 <!-- تبويب لوحة المعلم العامة -->
                 <div id="tab-teacher" class="main-tab-content space-y-6 hidden">
-                    
                     <div id="teacher-auth-lock" class="bg-cardBg border border-slate-800 rounded-3xl p-8 max-w-md mx-auto text-center space-y-4">
                         <div class="w-16 h-16 rounded-2xl bg-rose-950/50 border border-rose-500/50 text-rose-400 text-2xl inline-flex items-center justify-center">
                             <i class="fa-solid fa-lock"></i>
                         </div>
                         <h3 class="text-xl font-black text-white">لوحة المعلم محمية</h3>
-                        <p class="text-xs text-slate-400">يرجى إدخال كلمة المرور الخاصة بمعلم المنصة للوصول لهذه التحكم</p>
                         <form onsubmit="verifyTeacherPassword(event)" class="space-y-3">
                             <input type="password" id="teacher-pass-input" required placeholder="كلمة مرور المعلم" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none text-center">
-                            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
-                                تأكيد الدخول <i class="fa-solid fa-key mr-1"></i>
-                            </button>
+                            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg">تأكيد الدخول</button>
                         </form>
                     </div>
 
                     <div id="teacher-dashboard-panel" class="space-y-6 hidden">
-                        <div class="flex items-center justify-between bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
-                            <span class="text-xs text-emerald-400 font-bold"><i class="fa-solid fa-shield-check mr-1"></i> تم التحقق من هوية المعلم بنجاح</span>
-                            <button onclick="lockTeacherPanel()" class="text-xs text-slate-400 hover:text-rose-400 transition-all"><i class="fa-solid fa-lock mr-1"></i> قفل اللوحة</button>
-                        </div>
-
-                        <!-- أزرار عناصر لوحة المعلم -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <button type="button" id="teacher-nav-exams" onclick="switchTeacherSubTab('exams')" class="teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-neonPurple bg-purple-950/40 text-purple-300 transition-all shadow-lg">
-                                <i class="fa-solid fa-clipboard-question"></i> الاختبارات
-                            </button>
-                            <button type="button" id="teacher-nav-zoom" onclick="switchTeacherSubTab('zoom')" class="teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-800 bg-cardBg text-slate-400 hover:text-white transition-all shadow-lg">
-                                <i class="fa-solid fa-video"></i> البث المباشر
-                            </button>
-                            <button type="button" id="teacher-nav-lessons" onclick="switchTeacherSubTab('lessons')" class="teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-800 bg-cardBg text-slate-400 hover:text-white transition-all shadow-lg">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> رفع الدروس
-                            </button>
-                        </div>
-
-                        <!-- 1. محتوى إدارة أسئلة الاختبار -->
-                        <div id="teacher-sub-exams" class="teacher-sub-content space-y-6">
-                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-                                <h3 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-                                    <i class="fa-solid fa-clipboard-question text-purple-400"></i> إنشاء وإدارة أسئلة الاختبارات
-                                </h3>
-
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">نص السؤال</label>
-                                        <input type="text" id="q-text" placeholder="اكتب السؤال هنا..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonPurple focus:outline-none">
-                                    </div>
-
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-300 mb-1">الخيار الأول</label>
-                                            <input type="text" id="opt-0" placeholder="الخيار أ" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-300 mb-1">الخيار الثاني</label>
-                                            <input type="text" id="opt-1" placeholder="الخيار ب" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-300 mb-1">الخيار الثالث</label>
-                                            <input type="text" id="opt-2" placeholder="الخيار ج" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-300 mb-1">الخيار الرابع</label>
-                                            <input type="text" id="opt-3" placeholder="الخيار د" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:border-neonPurple focus:outline-none">
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">الإجابة الصحيحة</label>
-                                        <select id="correct-answer" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonPurple focus:outline-none">
-                                            <option value="0">الخيار الأول</option>
-                                            <option value="1">الخيار الثاني</option>
-                                            <option value="2">الخيار الثالث</option>
-                                            <option value="3">الخيار الرابع</option>
-                                        </select>
-                                    </div>
-
-                                    <button type="button" onclick="addQuestion()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-purple-600/20">
-                                        حفظ وإضافة السؤال للمنصة <i class="fa-solid fa-plus mr-1"></i>
-                                    </button>
-                                    <p id="teacher-msg" class="text-xs text-emerald-400 font-bold text-center"></p>
+                        <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                            <h3 class="text-lg font-black text-white"><i class="fa-solid fa-clipboard-question text-purple-400"></i> إدارة أسئلة الاختبارات الدائمة لكل الطلاب</h3>
+                            <div class="space-y-4">
+                                <input type="text" id="q-text" placeholder="نص السؤال..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="text" id="opt-0" placeholder="الخيار الأول" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                                    <input type="text" id="opt-1" placeholder="الخيار الثاني" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                                    <input type="text" id="opt-2" placeholder="الخيار الثالث" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                                    <input type="text" id="opt-3" placeholder="الخيار الرابع" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
                                 </div>
-
-                                <div class="border-t border-slate-800 pt-4 space-y-3">
-                                    <h4 class="font-bold text-white text-sm">الأسئلة الحالية المضافة (<span id="questions-count-badge">0</span>)</h4>
-                                    <div id="teacher-questions-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
-                                </div>
+                                <select id="correct-answer" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
+                                    <option value="0">الخيار الأول</option>
+                                    <option value="1">الخيار الثاني</option>
+                                    <option value="2">الخيار الثالث</option>
+                                    <option value="3">الخيار الرابع</option>
+                                </select>
+                                <button type="button" onclick="addQuestion()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-sm transition-all">إضافة سؤال دائم للمنصة</button>
                             </div>
-                        </div>
-
-                        <!-- 2. محتوى جدولة بث مباشر -->
-                        <div id="teacher-sub-zoom" class="teacher-sub-content space-y-6 hidden">
-                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-                                <h3 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-                                    <i class="fa-solid fa-video text-cyan-400"></i> جدولة بث مباشر جديد عبر Zoom
-                                </h3>
-
-                                <form id="add-zoom-form" onsubmit="addNewZoomSession(event)" class="space-y-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">عنوان اللقاء المباشر</label>
-                                        <input type="text" id="zoom-title" required placeholder="مثال: مراجعة ليلة الامتحان لشبكات الحاسوب" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">رابط الحصة على تطبيق Zoom (Link)</label>
-                                        <input type="url" id="zoom-link" required placeholder="https://us04web.zoom.us/j/..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">موعد وتوقيت البث</label>
-                                        <input type="text" id="zoom-time" required placeholder="مثال: اليوم الساعة 8:00 مساءً" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
-                                    </div>
-                                    <button type="submit" id="zoom-btn" class="w-full bg-gradient-to-r from-cyan-400 to-teal-500 hover:from-cyan-500 hover:to-teal-600 text-slate-950 font-black py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
-                                        نشر وجدولة حصة الـ Zoom للطلاب
-                                    </button>
-                                </form>
+                            <div class="border-t border-slate-800 pt-4 space-y-3">
+                                <h4 class="font-bold text-white text-sm">الأسئلة الحالية المضافة (<span id="questions-count-badge">0</span>)</h4>
+                                <div id="teacher-questions-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                             </div>
-
-                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
-                                <h4 class="font-bold text-white text-sm flex items-center gap-2">
-                                    <i class="fa-solid fa-headphones text-orange-400"></i> حصص Zoom المجدولة حالياً (<span id="zoom-count">0</span>)
-                                </h4>
-                                <div id="teacher-zoom-list" class="space-y-2"></div>
-                            </div>
-                        </div>
-
-                        <!-- 3. محتوى رفع درس وملزمة -->
-                        <div id="teacher-sub-lessons" class="teacher-sub-content space-y-6 hidden">
-                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-6">
-                                <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
-                                    <i class="fa-solid fa-cloud-arrow-up text-neonBlue"></i> رفع درس وملزمة جديدة
-                                </h3>
-
-                                <form id="add-lesson-form" onsubmit="addNewLessonFromTeacher(event)" class="space-y-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">عنوان الدرس</label>
-                                        <input type="text" id="teacher-video-title" required placeholder="مثال: الدرس الأول - الفيزياء" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">وصف الدرس</label>
-                                        <textarea id="teacher-video-desc" rows="2" placeholder="وصف محتوى الدرس..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none"></textarea>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">مصدر الفيديو</label>
-                                        <select id="video-source-type" onchange="toggleVideoSourceInput()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none mb-3">
-                                            <option value="url">إدخال رابط فيديو (YouTube / Google Drive / رابط مباشر)</option>
-                                            <option value="file">رفع ملف فيديو من الجهاز (Local File)</option>
-                                        </select>
-                                    </div>
-
-                                    <div id="video-url-container">
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو (YouTube أو Google Drive أو رابط مباشر MP4)</label>
-                                        <input type="url" id="teacher-video-url" placeholder="https://www.youtube.com/... أو رابط Google Drive" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-neonBlue focus:outline-none">
-                                    </div>
-
-                                    <div id="video-file-container" class="hidden">
-                                        <div class="border-2 border-dashed border-slate-700 rounded-2xl p-4 text-center hover:border-cyan-500/60 transition-all cursor-pointer relative">
-                                            <input type="file" id="teacher-video-file" accept="video/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileLabel('teacher-video-file', 'video-label')">
-                                            <i class="fa-solid fa-file-video text-2xl text-neonBlue mb-2"></i>
-                                            <p class="text-xs font-bold text-slate-300" id="video-label">اختيار فيديو من الجهاز للرفع</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 gap-4">
-                                        <div class="border-2 border-dashed border-slate-700 rounded-2xl p-4 text-center hover:border-rose-800/60 transition-all cursor-pointer relative">
-                                            <input type="file" id="teacher-pdf-file" accept="application/pdf" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileLabel('teacher-pdf-file', 'pdf-label')">
-                                            <i class="fa-solid fa-file-pdf text-2xl text-rose-400 mb-2"></i>
-                                            <p class="text-xs font-bold text-slate-300" id="pdf-label">اختيار ملزمة (PDF) للرفع - اختياري</p>
-                                        </div>
-                                    </div>
-
-                                    <button type="submit" id="upload-btn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
-                                        <span id="upload-btn-text">رفع وحفظ الدرس بشكل دائم</span> <i class="fa-solid fa-upload"></i>
-                                    </button>
-                                </form>
-                            </div>
-
-                            <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
-                                <h4 class="font-bold text-white text-sm flex items-center gap-2">
-                                    <i class="fa-solid fa-photo-film text-neonBlue"></i> الدروس المرفوعة حالياً بالمنصة (<span id="teacher-videos-count">0</span>)
-                                </h4>
-                                <div id="teacher-lessons-list" class="space-y-2"></div>
-                            </div>
-                        </div>
-
-                        <!-- الطلاب المسجلون -->
-                        <div class="bg-cardBg border border-slate-800 rounded-3xl p-6 space-y-4">
-                            <h4 class="font-bold text-white text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-users text-neonGreen"></i> الطلاب المسجلون حديثاً (<span id="students-count">0</span>)
-                            </h4>
-                            <div id="teacher-students-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                         </div>
                     </div>
-
                 </div>
             </main>
         </div>
@@ -522,76 +331,40 @@
     <script>
         const SUPABASE_URL = 'https://skpenqzmeckoedhjudkm.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_X3AGsK844bwH3lEipw-nsw_MZfdFw82';
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let isTeacherUnlocked = false;
         let cachedLessons = [];
-        let cachedZoom = [];
-        let cachedStudents = [];
+        let cachedQuestions = [];
         let currentLoggedInUserName = 'مستخدم';
         let currentLoggedInUserObj = null;
-
         let studentAutoReports = JSON.parse(localStorage.getItem('student_auto_monitoring')) || {};
 
-        let questions = JSON.parse(localStorage.getItem('platform_questions')) || [
-            {
-                text: "ما هي لغة هيكلة صفحات الويب الأساسية؟",
-                options: ["HTML", "Python", "C++", "Java"],
-                correct: "0"
-            }
-        ];
+        async function fetchInitialData() {
+            try {
+                // جلب الدروس
+                const { data: lessonsData } = await supabaseClient.from('lessons').select('*').order('created_at', { ascending: false });
+                if (lessonsData) cachedLessons = lessonsData;
 
-        function calculateOverallEvaluation(score, total) {
-            const percentage = (score / total) * 100;
-            if (percentage >= 85) return { text: "ممتاز (أداء استثنائي)", stars: 5, color: "text-emerald-400" };
-            if (percentage >= 70) return { text: "جيد جداً (مستوى متميز)", stars: 4, color: "text-cyan-400" };
-            if (percentage >= 50) return { text: "جيد (تحتاج لمزيد من التركيز)", stars: 3, color: "text-amber-400" };
-            return { text: "ضعيف (يجب إعادة مراجعة الدروس)", stars: 2, color: "text-rose-400" };
+                // جلب الأسئلة ليراها كل الطلاب بشكل دائم
+                const { data: questionsData } = await supabaseClient.from('platform_questions').select('*');
+                if (questionsData) cachedQuestions = questionsData;
+
+                renderLessons();
+                loadStudentExam();
+                loadTeacherQuestions();
+                fetchPlatformChatMessages();
+            } catch (err) { console.error(err); }
         }
 
-        // دالة إرسال رسالة جديدة للدردشة وحفظها في قاعدة البيانات
-        async function sendPlatformChat() {
-            const input = document.getElementById('platform-chat-input');
-            const msgText = input.value.trim();
-            if (!msgText) return;
-
-            // إدخال الرسالة إلى جدول platform_chat في Supabase
-            const { error } = await supabaseClient
-                .from('platform_chat')
-                .insert([{ 
-                    sender_name: currentLoggedInUserName, 
-                    message: msgText 
-                }]);
-
-            if (error) {
-                alert('❌ خطأ في إرسال الرسالة: ' + error.message);
-                return;
-            }
-
-            input.value = '';
-            await fetchPlatformChatMessages(); // تحديث الدردشة فوراً بعد الإرسال
-        }
-
-        // دالة جلب وعرض الرسائل من قاعدة البيانات لتظهر لكل الطلاب
         async function fetchPlatformChatMessages() {
             const chatMessages = document.getElementById('platform-chat-messages');
             if (!chatMessages) return;
 
-            const { data: messages, error } = await supabaseClient
-                .from('platform_chat')
-                .select('*')
-                .order('created_at', { ascending: true }); // ترتيب الرسائل من الأقدم للأحدث
-
-            if (error) {
-                console.error('خطأ في جلب الرسائل:', error);
-                return;
-            }
-
+            const { data: messages } = await supabaseClient.from('platform_chat').select('*').order('created_at', { ascending: true });
             chatMessages.innerHTML = '';
             
             if (!messages || messages.length === 0) {
-                chatMessages.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">لا توجد رسائل سابقة. كن أول المشاركين!</p>`;
+                chatMessages.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">لا توجد رسائل سابقة.</p>`;
                 return;
             }
 
@@ -603,139 +376,36 @@
                     </div>
                 `;
             });
-
-            // النزول تلقائياً لآخر رسالة
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function handleChatKeyPress(e) {
-            if (e.key === 'Enter') sendPlatformChat();
+        async function sendPlatformChat() {
+            const input = document.getElementById('platform-chat-input');
+            const msgText = input.value.trim();
+            if (!msgText) return;
+
+            await supabaseClient.from('platform_chat').insert([{ sender_name: currentLoggedInUserName, message: msgText }]);
+            input.value = '';
+            await fetchPlatformChatMessages();
         }
 
-        function switchTeacherSubTab(subTabName) {
-            document.querySelectorAll('.teacher-sub-content').forEach(c => c.classList.add('hidden'));
-            document.querySelectorAll('.teacher-sub-btn').forEach(b => {
-                b.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-800 bg-cardBg text-slate-400 hover:text-white transition-all shadow-lg";
-            });
+        function handleChatKeyPress(e) { if (e.key === 'Enter') sendPlatformChat(); }
 
-            document.getElementById(`teacher-sub-${subTabName}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`teacher-nav-${subTabName}`);
-            if (activeBtn) {
-                if (subTabName === 'exams') activeBtn.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-neonPurple bg-purple-950/40 text-purple-300 transition-all shadow-lg";
-                else if (subTabName === 'zoom') activeBtn.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-cyan-500 bg-cyan-950/40 text-cyan-300 transition-all shadow-lg";
-                else activeBtn.className = "teacher-sub-btn p-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-neonBlue bg-cyan-950/40 text-neonBlue transition-all shadow-lg";
-            }
-        }
-
-        function updateAutomaticParentView() {
-            const box = document.getElementById('parent-custom-report-box');
-            const attendanceEl = document.getElementById('parent-attendance-status');
-            const ratingContainer = document.getElementById('parent-teacher-rating');
-            const ratingText = document.getElementById('parent-rating-text');
-            const parentScoreEl = document.getElementById('parent-exam-score');
-            if (!box || !currentLoggedInUserObj) return;
-
-            const username = currentLoggedInUserObj.username;
-            const studentData = studentAutoReports[username] || { examsTaken: 0, lastScore: 'لم يتقدم لاختبار', attendance: 'نشط ومنتظم بالمنصة', stars: 5, history: [] };
-
-            if (parentScoreEl) parentScoreEl.innerText = studentData.lastScore;
-            if (attendanceEl) attendanceEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ${studentData.attendance}`;
-
-            let starsHTML = '';
-            for (let i = 0; i < 5; i++) {
-                if (i < studentData.stars) {
-                    starsHTML += `<i class="fa-solid fa-star"></i>`;
-                } else {
-                    starsHTML += `<i class="fa-regular fa-star text-slate-600"></i>`;
-                }
-            }
-            if (ratingContainer) ratingContainer.innerHTML = starsHTML;
-            if (ratingText) ratingText.innerText = `تقييم آلي ذكي (${studentData.stars}/5 نجوم)`;
-
-            if (studentData.history.length === 0) {
-                box.innerHTML = `<p class="text-slate-400 text-center py-2">قامت المنصة برصد دخولك. بانتظار إنجازك للاختبارات الأولى ليتم إدراج التقرير التلقائي هنا.</p>`;
-                return;
-            }
-
-            let htmlContent = '';
-            studentData.history.forEach(item => {
-                let repStars = '⭐'.repeat(item.stars || 5);
-                htmlContent += `
-                    <div class="border-b border-slate-800/80 pb-2.5 space-y-1 text-right">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-500">${item.date}</span>
-                            <span class="text-emerald-400 font-bold">النتيجة: ${item.scoreText} - ${repStars}</span>
-                        </div>
-                        <p class="text-slate-300">التحليل التلقائي: ${item.evaluationText}</p>
-                    </div>
-                `;
-            });
-            box.innerHTML = htmlContent;
-        }
-
-        function addQuestion() {
-            const text = document.getElementById('q-text').value.trim();
-            const opts = [0, 1, 2, 3].map(i => document.getElementById(`opt-${i}`).value.trim());
-            const correct = document.getElementById('correct-answer').value;
-
-            if (!text || opts.some(o => !o)) return alert("الرجاء تعبئة نص السؤال وجميع الخيارات الأربعة!");
-
-            questions.push({ text, options: opts, correct });
-            saveAndRefresh();
-            document.getElementById('q-text').value = '';
-            [0, 1, 2, 3].forEach(i => document.getElementById(`opt-${i}`).value = '');
-            const msg = document.getElementById('teacher-msg');
-            msg.textContent = "تم إضافة السؤال بنجاح!";
-            setTimeout(() => msg.textContent = '', 4000);
-        }
-
-        function deleteQuestion(index) {
-            if (confirm("هل أنت متأكد من حذف هذا السؤال؟")) {
-                questions.splice(index, 1);
-                saveAndRefresh();
-            }
-        }
-
-        function saveAndRefresh() {
-            localStorage.setItem('platform_questions', JSON.stringify(questions));
-            loadTeacherQuestions();
-            loadStudentExam();
-        }
-
-        function loadTeacherQuestions() {
-            const listContainer = document.getElementById('teacher-questions-list');
-            const badge = document.getElementById('questions-count-badge');
-            if (!listContainer) return;
-            
-            badge.innerText = questions.length;
-            listContainer.innerHTML = questions.length === 0 ? "<p class='text-xs text-slate-500 text-center py-2'>لا توجد أي أسئلة مضافة حالياً.</p>" : "";
-
-            questions.forEach((q, index) => {
-                listContainer.innerHTML += `
-                    <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                        <button type="button" onclick="deleteQuestion(${index})" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
-                        <div>
-                            <p class="font-bold text-white"><strong>السؤال ${index + 1}:</strong> ${q.text}</p>
-                            <span class="text-[10px] text-slate-400">الخيارات: ${q.options.join(' - ')}</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
+        // إدارة واجهة الاختبارات الدائمة للطلاب
         function loadStudentExam() {
             const container = document.getElementById('student-questions-container');
             if (!container) return;
             container.innerHTML = '';
             
-            if (questions.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-bold">لا توجد اختبارات متاحة حالياً.</div>`;
+            if (cachedQuestions.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-bold">لا توجد اختبارات مضافة حالياً.</div>`;
                 return;
             }
 
-            questions.forEach((q, qIndex) => {
+            cachedQuestions.forEach((q, qIndex) => {
                 let optionsHTML = '';
-                q.options.forEach((opt, optIndex) => {
+                const opts = Array.isArray(q.options) ? q.options : JSON.parse(q.options || '[]');
+                opts.forEach((opt, optIndex) => {
                     optionsHTML += `
                         <label class="flex items-center justify-end gap-3 bg-slate-900/80 hover:bg-slate-900 border border-slate-800 p-3 rounded-xl cursor-pointer text-xs font-bold text-slate-200 transition-all text-right">
                             <span>${opt}</span>
@@ -753,365 +423,64 @@
             });
         }
 
-        function submitExam() {
-            let score = 0;
-            const total = questions.length;
-            if (total === 0) return alert("لا يوجد أسئلة لحلها!");
+        // إضافة سؤال دائم من لوحة المعلم ليرى كل الطلاب الاختبارات
+        async function addQuestion() {
+            const text = document.getElementById('q-text').value.trim();
+            const opts = [0, 1, 2, 3].map(i => document.getElementById(`opt-${i}`).value.trim());
+            const correct = document.getElementById('correct-answer').value;
 
-            questions.forEach((q, qIndex) => {
-                const selected = document.querySelector(`input[name="question_${qIndex}"]:checked`);
-                if (selected && selected.value === q.correct) score++;
-            });
+            if (!text || opts.some(o => !o)) return alert("الرجاء تعبئة نص السؤال وجميع الخيارات الأربعة!");
 
-            const resultBox = document.getElementById('result-box');
-            resultBox.classList.remove('hidden');
-            
-            const evaluation = calculateOverallEvaluation(score, total);
-            const percentage = (score / total) * 100;
+            const { error } = await supabaseClient.from('platform_questions').insert([{
+                text, options: opts, correct
+            }]);
 
-            resultBox.className = `p-4 rounded-2xl text-center font-bold text-sm border bg-slate-900/90 ${evaluation.color} border-slate-800`;
-            resultBox.innerHTML = `نتيجة الاختبار: ${score} من ${total} (${percentage.toFixed(0)}%)<br><span class="text-xs mt-1 block">التقييم: ${evaluation.text}</span>`;
-
-            if (currentLoggedInUserObj) {
-                const username = currentLoggedInUserObj.username;
-                if (!studentAutoReports[username]) {
-                    studentAutoReports[username] = { examsTaken: 0, lastScore: '', attendance: 'منتظم ومجتهد بالمنصة', stars: 5, history: [] };
-                }
-
-                const scoreTextFormatted = `${score} / ${total} (${percentage.toFixed(0)}%)`;
-                studentAutoReports[username].lastScore = scoreTextFormatted;
-                studentAutoReports[username].stars = evaluation.stars;
-                studentAutoReports[username].examsTaken += 1;
-                
-                studentAutoReports[username].history.unshift({
-                    scoreText: scoreTextFormatted,
-                    evaluationText: evaluation.text,
-                    stars: evaluation.stars,
-                    date: new Date().toLocaleDateString('ar-EG')
-                });
-
-                localStorage.setItem('student_auto_monitoring', JSON.stringify(studentAutoReports));
-                updateAutomaticParentView();
-            }
-        }
-
-        function updateFileLabel(inputId, labelId) {
-            const input = document.getElementById(inputId);
-            if (input.files && input.files[0]) {
-                document.getElementById(labelId).innerText = `تم اختيار: ${input.files[0].name}`;
-            }
-        }
-
-        function switchMainTab(tabName) {
-            document.querySelectorAll('.main-tab-content').forEach(tab => tab.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = "nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40";
-            });
-
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`btn-${tabName}`);
-            if (activeBtn) activeBtn.className = "nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-neonBlue bg-cyan-950/30 border-r-4 border-neonBlue";
-
-            if (tabName === 'exams') loadStudentExam();
-            else if (tabName === 'teacher') loadTeacherQuestions();
-            else if (tabName === 'parent') updateAutomaticParentView();
-        }
-
-        function toggleAuthMode(mode) {
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            if (mode === 'login') {
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-            } else {
-                loginForm.classList.add('hidden');
-                signupForm.classList.remove('hidden');
-            }
-        }
-
-        async function handleSignUp(e) {
-            e.preventDefault();
-            const fullname = document.getElementById('signup-fullname').value.trim();
-            const username = document.getElementById('signup-username').value.trim();
-            const grade = document.getElementById('signup-grade').value;
-            const email = document.getElementById('signup-email').value.trim();
-            const password = document.getElementById('signup-password').value;
-            const confirmPassword = document.getElementById('signup-confirm-password').value;
-
-            if (password !== confirmPassword) return alert('⚠️ كلمات المرور غير متطابقة!');
-            if (cachedStudents.find(s => s.username === username)) return alert('⚠️ اسم المستخدم مستخدم بالفعل.');
-
-            const { error } = await supabaseClient.from('students').insert([{ fullname, username, grade, email, password }]);
-            if (error) return alert('❌ خطأ في إنشاء الحساب: ' + error.message);
-
-            alert('✅ تم إنشاء الحساب بنجاح!');
-            toggleAuthMode('login');
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('login-username').value.trim();
-            const passwordInput = document.getElementById('login-password').value.trim();
-
-            if (usernameInput === 'teacher' && passwordInput === 'F123') {
-                isTeacherUnlocked = true;
-                currentLoggedInUserName = 'الأستاذ (المعلم)';
-                currentLoggedInUserObj = null;
-                openPlatform('الأستاذ (المعلم)', 'لوحة التحكم الإدارية');
-                return;
-            }
-
-            const { data: studentsData } = await supabaseClient.from('students').select('*');
-            if (studentsData) {
-                cachedStudents = studentsData;
-            }
-
-            const foundStudent = cachedStudents.find(s => 
-                (s.username.trim() === usernameInput || s.email.trim() === usernameInput) && 
-                s.password.trim() === passwordInput
-            );
-
-            if (foundStudent) {
-                currentLoggedInUserName = foundStudent.fullname;
-                currentLoggedInUserObj = foundStudent;
-                openPlatform(foundStudent.fullname, foundStudent.grade);
-            } else {
-                alert('⚠️ اسم المستخدم أو كلمة المرور غير صحيحة!');
-            }
-        }
-
-        function verifyTeacherPassword(e) {
-            e.preventDefault();
-            if (document.getElementById('teacher-pass-input').value === 'F123') {
-                isTeacherUnlocked = true;
-                document.getElementById('teacher-auth-lock').classList.add('hidden');
-                document.getElementById('teacher-dashboard-panel').classList.remove('hidden');
-                loadTeacherQuestions();
-            } else {
-                alert('⚠️ كلمة مرور المعلم غير صحيحة!');
-            }
-        }
-
-        function lockTeacherPanel() {
-            document.getElementById('teacher-dashboard-panel').classList.add('hidden');
-            document.getElementById('teacher-auth-lock').classList.remove('hidden');
-        }
-
-        function openPlatform(name, role) {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('main-platform').classList.remove('hidden');
-            document.getElementById('display-user-name').innerText = name;
-            document.getElementById('display-user-grade').innerText = role;
-            renderLessons();
-            renderZoomSessions();
-            renderStudents();
-            loadStudentExam();
-            fetchPlatformChatMessages(); // استدعاء دالة جلب الرسائل عند فتح المنصة
-            if (currentLoggedInUserObj) {
-                updateAutomaticParentView();
-            }
-        }
-
-        function handleLogout() {
-            currentLoggedInUserObj = null;
-            document.getElementById('main-platform').classList.add('hidden');
-            document.getElementById('auth-screen').classList.remove('hidden');
-        }
-
-        function toggleVideoSourceInput() {
-            const sourceType = document.getElementById('video-source-type').value;
-            document.getElementById('video-url-container').classList.toggle('hidden', sourceType !== 'url');
-            document.getElementById('video-file-container').classList.toggle('hidden', sourceType !== 'file');
-        }
-
-        function parseVideoUrl(url) {
-            if (!url) return { type: 'iframe', url: '' };
-            let cleanUrl = url.trim();
-            let videoId = '';
-            if (cleanUrl.includes('youtu.be/')) {
-                videoId = cleanUrl.split('youtu.be/')[1].split('?')[0].split('&')[0];
-            } else if (cleanUrl.includes('youtube.com/watch')) {
-                const urlParams = new URLSearchParams(new URL(cleanUrl).search);
-                videoId = urlParams.get('v');
-            } else if (cleanUrl.includes('youtube.com/embed/')) {
-                return { type: 'iframe', url: cleanUrl };
-            } else if (cleanUrl.includes('youtube.com/shorts/')) {
-                videoId = cleanUrl.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
-            }
-            if (videoId) {
-                return { type: 'iframe', url: `https://www.youtube.com/embed/${videoId}` };
-            }
-            if (cleanUrl.includes('drive.google.com')) {
-                let fileId = '';
-                if (cleanUrl.includes('/d/')) {
-                    const parts = cleanUrl.split('/d/');
-                    if (parts[1]) fileId = parts[1].split('/')[0];
-                } else if (cleanUrl.includes('id=')) {
-                    const match = cleanUrl.match(/id=([^&]+)/);
-                    if (match) fileId = match[1];
-                }
-                if (fileId) {
-                    return { type: 'iframe', url: `https://drive.google.com/file/d/${fileId}/preview` };
-                }
-            }
-            return { type: 'iframe', url: cleanUrl };
-        }
-
-        function readFileAsDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        async function addNewLessonFromTeacher(e) {
-            e.preventDefault();
-            const btnText = document.getElementById('upload-btn-text');
-            const uploadBtn = document.getElementById('upload-btn');
-            
-            const title = document.getElementById('teacher-video-title').value.trim();
-            const desc = document.getElementById('teacher-video-desc').value.trim();
-            const sourceType = document.getElementById('video-source-type').value;
-            
-            btnText.innerText = 'جاري المعالجة والرفع...';
-            uploadBtn.disabled = true;
-
-            try {
-                let videoData = null;
-
-                if (sourceType === 'url') {
-                    const rawUrl = document.getElementById('teacher-video-url').value.trim();
-                    if (!rawUrl) {
-                        alert('⚠️ يرجى إدخال رابط الفيديو!');
-                        uploadBtn.disabled = false;
-                        btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
-                        return;
-                    }
-                    const parsed = parseVideoUrl(rawUrl);
-                    videoData = parsed.url;
-                } else {
-                    const videoFileInput = document.getElementById('teacher-video-file');
-                    if (!videoFileInput.files || !videoFileInput.files[0]) {
-                        alert('⚠️ يرجى اختيار ملف فيديو من جهازك!');
-                        uploadBtn.disabled = false;
-                        btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
-                        return;
-                    }
-                    videoData = await readFileAsDataURL(videoFileInput.files[0]);
-                }
-
-                let pdfData = null;
-                const pdfFileInput = document.getElementById('teacher-pdf-file');
-                if (pdfFileInput.files && pdfFileInput.files[0]) {
-                    pdfData = await readFileAsDataURL(pdfFileInput.files[0]);
-                }
-
-                const newLesson = { 
-                    title, 
-                    description: desc, 
-                    video_data: videoData, 
-                    pdf_data: pdfData,
-                    source_type: sourceType,
-                    is_embed: true,
-                    lesson_date: new Date().toISOString().split('T')[0]
-                };
-
-                const { error } = await supabaseClient.from('lessons').insert([newLesson]);
-                
-                if (error) {
-                    alert('❌ خطأ في رفع الدرس إلى قاعدة البيانات: ' + error.message);
-                } else {
-                    alert('✅ تم رفع وحفظ الدرس بنجاح!');
-                    document.getElementById('add-lesson-form').reset();
-                    document.getElementById('video-label').innerText = 'اختيار فيديو من الجهاز للرفع';
-                    document.getElementById('pdf-label').innerText = 'اختيار ملزمة (PDF) للرفع - اختياري';
-                    await fetchInitialData();
-                }
-            } catch (err) {
-                console.error(err);
-                alert('❌ حدث خطأ غير متوقع أثناء الرفع.');
-            } finally {
-                uploadBtn.disabled = false;
-                btnText.innerText = 'رفع وحفظ الدرس بشكل دائم';
-            }
-        }
-
-        async function addNewZoomSession(e) {
-            e.preventDefault();
-            const title = document.getElementById('zoom-title').value.trim();
-            const link = document.getElementById('zoom-link').value.trim();
-            const time = document.getElementById('zoom-time').value.trim();
-
-            const { error } = await supabaseClient.from('zoom_sessions').insert([{ title, link, time }]);
             if (error) {
-                alert('❌ خطأ في جدولة الحصة: ' + error.message);
+                alert('❌ خطأ في حفظ السؤال: ' + error.message);
             } else {
-                alert('✅ تم جدول ونشر حصة البث المباشر بنجاح!');
-                document.getElementById('add-zoom-form').reset();
+                alert('✅ تم إضافة السؤال بنجاح ليظهر لكل الطلاب بشكل دائم!');
+                document.getElementById('q-text').value = '';
+                [0, 1, 2, 3].forEach(i => document.getElementById(`opt-${i}`).value = '');
                 await fetchInitialData();
             }
         }
 
-        async function deleteZoomSession(id) {
-            if (confirm("هل أنت متأكد من حذف هذه الحصة المباشرة؟")) {
-                const { error } = await supabaseClient.from('zoom_sessions').delete().eq('id', id);
-                if (error) alert('❌ خطأ في الحذف: ' + error.message);
-                else await fetchInitialData();
+        async function deleteQuestion(id) {
+            if (confirm("هل أنت متأكد من حذف هذا السؤال؟")) {
+                await supabaseClient.from('platform_questions').delete().eq('id', id);
+                await fetchInitialData();
             }
         }
 
-        async function deleteLesson(id) {
-            if (confirm("هل أنت متأكد من حذف هذا الدرس؟")) {
-                const { error } = await supabaseClient.from('lessons').delete().eq('id', id);
-                if (error) alert('❌ خطأ في الحذف: ' + error.message);
-                else await fetchInitialData();
-            }
+        function loadTeacherQuestions() {
+            const listContainer = document.getElementById('teacher-questions-list');
+            const badge = document.getElementById('questions-count-badge');
+            if (!listContainer) return;
+            
+            badge.innerText = cachedQuestions.length;
+            listContainer.innerHTML = cachedQuestions.length === 0 ? "<p class='text-xs text-slate-500 text-center py-2'>لا توجد أسئلة مضافة.</p>" : "";
+
+            cachedQuestions.forEach((q, index) => {
+                const opts = Array.isArray(q.options) ? q.options : JSON.parse(q.options || '[]');
+                listContainer.innerHTML += `
+                    <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
+                        <button type="button" onclick="deleteQuestion('${q.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
+                        <div>
+                            <p class="font-bold text-white"><strong>السؤال ${index + 1}:</strong> ${q.text}</p>
+                            <span class="text-[10px] text-slate-400">الخيارات: ${opts.join(' - ')}</span>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        async function fetchInitialData() {
-            try {
-                const { data: lessonsData } = await supabaseClient.from('lessons').select('*').order('created_at', { ascending: false });
-                if (lessonsData) cachedLessons = lessonsData;
-
-                const { data: zoomData } = await supabaseClient.from('zoom_sessions').select('*');
-                if (zoomData) cachedZoom = zoomData;
-
-                const { data: studentsData } = await supabaseClient.from('students').select('*');
-                if (studentsData) cachedStudents = studentsData;
-
-                renderLessons();
-                renderZoomSessions();
-                renderStudents();
-                await fetchPlatformChatMessages(); // استدعاء دالة جلب وعرض الرسائل داخل البيانات الأولية
-            } catch (err) { console.error(err); }
-        }
-
-        function selectActiveLesson(index) {
-            const lesson = cachedLessons[index];
-            if (!lesson) return;
-
-            document.getElementById('active-lesson-container').innerHTML = `
-                <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800">
-                    <iframe src="${lesson.video_data}" class="w-full h-full" allowfullscreen></iframe>
-                </div>
-                <h4 class="font-extrabold text-white text-lg">${lesson.title}</h4>
-            `;
-
-            document.getElementById('active-lesson-pdf-box').innerHTML = lesson.pdf_data ? `
-                <a href="${lesson.pdf_data}" download="${lesson.title}.pdf" class="w-full bg-rose-950/40 text-rose-400 border border-rose-800/50 hover:bg-rose-900/50 text-xs font-bold py-3 rounded-2xl text-center transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-file-pdf"></i> تحميل الملزمة أو استعراضها
-                </a>` : `<div class="w-full bg-slate-900/80 border border-slate-800 rounded-2xl py-3 text-center text-slate-400 text-xs font-bold">لا توجد ملزمة نشطة حالياً</div>`;
-        }
-
-        // دالة حفظ الملاحظة المتفاعلة مع Supabase
+        // حفظ الملاحظات السريعة الدائمة المرتبطة بقاعدة البيانات لكل طالب
         async function saveStudentNote() {
             const noteText = document.getElementById('student-quick-note').value.trim();
             if (!noteText) return alert('⚠️ يرجى كتابة ملاحظة أولاً!');
             
             if (!currentLoggedInUserObj) {
-                alert('⚠️ يجب تسجيل الدخول كطالب لحفظ الملاحظة!');
+                alert('⚠️ يجب تسجيل الدخول كطالب لحفظ الملاحظة الدائمة!');
                 return;
             }
 
@@ -1123,110 +492,135 @@
             if (error) {
                 alert('❌ خطأ في حفظ الملاحظة: ' + error.message);
             } else {
-                alert('✅ تم حفظ الملاحظة بنجاح وتحديثها في المنصة!');
+                alert('✅ تم حفظ ملاحظتك الدائمة بنجاح على المنصة!');
                 document.getElementById('student-quick-note').value = '';
             }
         }
 
+        function submitExam() {
+            let score = 0;
+            const total = cachedQuestions.length;
+            if (total === 0) return alert("لا توجد أسئلة لحلها!");
+
+            cachedQuestions.forEach((q, qIndex) => {
+                const selected = document.querySelector(`input[name="question_${qIndex}"]:checked`);
+                if (selected && selected.value == q.correct) score++;
+            });
+
+            const resultBox = document.getElementById('result-box');
+            resultBox.classList.remove('hidden');
+            const percentage = (score / total) * 100;
+            resultBox.className = `p-4 rounded-2xl text-center font-bold text-sm border bg-slate-900/90 text-cyan-400 border-slate-800`;
+            resultBox.innerHTML = `نتيجة الاختبار: ${score} من ${total} (${percentage.toFixed(0)}%)`;
+        }
+
+        function toggleAuthMode(mode) {
+            document.getElementById('login-form').classList.toggle('hidden', mode !== 'login');
+            document.getElementById('signup-form').classList.toggle('hidden', mode !== 'signup');
+            document.getElementById('tab-login-btn').className = mode === 'login' ? 'flex-1 py-3 text-center border-b-2 border-neonBlue font-bold text-white transition-all' : 'flex-1 py-3 text-center border-b-2 border-transparent text-slate-400 font-bold';
+            document.getElementById('tab-signup-btn').className = mode === 'signup' ? 'flex-1 py-3 text-center border-b-2 border-neonGreen font-bold text-white transition-all' : 'flex-1 py-3 text-center border-b-2 border-transparent text-slate-400 font-bold';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+
+            if (usernameInput === 'teacher' && passwordInput === 'F123') {
+                currentLoggedInUserName = 'الأستاذ (المعلم)';
+                currentLoggedInUserObj = null;
+                openPlatform('الأستاذ (المعلم)', 'لوحة التحكم الإدارية');
+                return;
+            }
+
+            const { data: studentsData } = await supabaseClient.from('students').select('*');
+            const foundStudent = studentsData?.find(s => (s.username.trim() === usernameInput || s.email.trim() === usernameInput) && s.password.trim() === passwordInput);
+
+            if (foundStudent) {
+                currentLoggedInUserName = foundStudent.fullname;
+                currentLoggedInUserObj = foundStudent;
+                openPlatform(foundStudent.fullname, foundStudent.grade);
+            } else {
+                alert('⚠️ اسم المستخدم أو كلمة المرور غير صحيحة!');
+            }
+        }
+
+        async function handleSignUp(e) {
+            e.preventDefault();
+            const fullname = document.getElementById('signup-fullname').value.trim();
+            const username = document.getElementById('signup-username').value.trim();
+            const grade = document.getElementById('signup-grade').value;
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+
+            const { error } = await supabaseClient.from('students').insert([{ fullname, username, grade, email, password }]);
+            if (error) alert('❌ خطأ في إنشاء الحساب: ' + error.message);
+            else { alert('✅ تم إنشاء الحساب بنجاح!'); toggleAuthMode('login'); }
+        }
+
+        function verifyTeacherPassword(e) {
+            e.preventDefault();
+            if (document.getElementById('teacher-pass-input').value === 'F123') {
+                document.getElementById('teacher-auth-lock').classList.add('hidden');
+                document.getElementById('teacher-dashboard-panel').classList.remove('hidden');
+                loadTeacherQuestions();
+            } else { alert('⚠️ كلمة المرور خاطئة!'); }
+        }
+
+        function openPlatform(name, role) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-platform').classList.remove('hidden');
+            document.getElementById('display-user-name').innerText = name;
+            document.getElementById('display-user-grade').innerText = role;
+            fetchInitialData();
+        }
+
+        function handleLogout() {
+            currentLoggedInUserObj = null;
+            document.getElementById('main-platform').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+        }
+
+        function switchMainTab(tabName) {
+            document.querySelectorAll('.main-tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.className = "nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-slate-400 hover:text-white hover:bg-slate-800/40");
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            if (activeBtn) activeBtn.className = "nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-right font-bold text-neonBlue bg-cyan-950/30 border-r-4 border-neonBlue";
+
+            if (tabName === 'exams') loadStudentExam();
+            else if (tabName === 'teacher') loadTeacherQuestions();
+        }
+
         function renderLessons() {
             const grid = document.getElementById('student-lessons-grid');
-            const teacherList = document.getElementById('teacher-lessons-list');
-            const videosCountDash = document.getElementById('videos-count-dash');
-            const teacherVideosCount = document.getElementById('teacher-videos-count');
-
-            if (videosCountDash) videosCountDash.innerText = cachedLessons.length;
-            if (teacherVideosCount) teacherVideosCount.innerText = cachedLessons.length;
-
-            if (grid) {
-                grid.innerHTML = cachedLessons.length === 0 ? `<div class="col-span-full text-center py-4 text-slate-500 font-bold text-xs">لم يقم المعلم بنشر أي دروس بعد.</div>` : '';
-                cachedLessons.forEach((lesson, index) => {
-                    grid.innerHTML += `
-                        <div onclick="selectActiveLesson(${index})" class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-cyan-500/50 transition-all space-y-2 text-right">
-                            <span class="text-xs font-bold text-cyan-400 block">الدرس ${index + 1}</span>
-                            <h5 class="font-bold text-white text-sm">${lesson.title}</h5>
-                            <p class="text-xs text-slate-400 line-clamp-2">${lesson.description || 'بدون وصف'}</p>
-                        </div>
-                    `;
-                });
-            }
-
-            if (teacherList) {
-                teacherList.innerHTML = cachedLessons.length === 0 ? `<p class="text-xs text-slate-500 text-center py-2">لا توجد دروس مرفوعة حالياً.</p>` : '';
-                cachedLessons.forEach((lesson) => {
-                    teacherList.innerHTML += `
-                        <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                            <button type="button" onclick="deleteLesson('${lesson.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
-                            <div>
-                                <span class="font-bold text-white">${lesson.title}</span>
-                                <span class="text-[10px] text-slate-400 block">${lesson.description || ''}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
+            if (!grid) return;
+            grid.innerHTML = cachedLessons.length === 0 ? `<p class='text-xs text-slate-500 py-2'>لا توجد دروس متاحة حالياً.</p>` : '';
+            cachedLessons.forEach((lesson, index) => {
+                grid.innerHTML += `
+                    <div onclick="selectActiveLesson(${index})" class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-cyan-500/50 transition-all space-y-2 text-right">
+                        <span class="text-xs font-bold text-cyan-400 block">الدرس ${index + 1}</span>
+                        <h5 class="font-bold text-white text-sm">${lesson.title}</h5>
+                    </div>
+                `;
+            });
             if (cachedLessons.length > 0) selectActiveLesson(0);
         }
 
-        function renderZoomSessions() {
-            const studentGrid = document.getElementById('student-zoom-grid');
-            const teacherList = document.getElementById('teacher-zoom-list');
-            const zoomCount = document.getElementById('zoom-count');
-
-            if (zoomCount) zoomCount.innerText = cachedZoom.length;
-
-            if (studentGrid) {
-                studentGrid.innerHTML = cachedZoom.length === 0 ? `<div class="col-span-full text-center py-3 text-slate-500 text-xs">لا توجد حصص Zoom مجدولة حالياً.</div>` : '';
-                cachedZoom.forEach(z => {
-                    studentGrid.innerHTML += `
-                        <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl space-y-3 text-right">
-                            <h5 class="font-bold text-white text-sm"><i class="fa-solid fa-video text-cyan-400 ml-2"></i> ${z.title}</h5>
-                            <span class="text-xs text-slate-400 block"><i class="fa-regular fa-clock ml-1"></i> ${z.time}</span>
-                            <a href="${z.link}" target="_blank" class="w-full bg-cyan-950/40 text-cyan-400 border border-cyan-800/50 hover:bg-cyan-900/50 py-2.5 rounded-xl text-xs font-bold text-center block transition-all">
-                                الدخول لحصة البث المباشر <i class="fa-solid fa-arrow-left mr-1"></i>
-                            </a>
-                        </div>
-                    `;
-                });
-            }
-
-            if (teacherList) {
-                teacherList.innerHTML = cachedZoom.length === 0 ? `<p class="text-xs text-slate-500 text-center py-2">لا توجد حصص Zoom مجدولة.</p>` : '';
-                cachedZoom.forEach(z => {
-                    teacherList.innerHTML += `
-                        <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                            <button type="button" onclick="deleteZoomSession('${z.id}')" class="text-xs text-rose-400 p-2 rounded-lg hover:bg-rose-950/30"><i class="fa-solid fa-trash"></i></button>
-                            <div>
-                                <span class="font-bold text-white">${z.title}</span>
-                                <span class="text-[10px] text-cyan-400 block">${z.time}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        function renderStudents() {
-            const studentsCountBadge = document.getElementById('students-count');
-            const teacherStudentsList = document.getElementById('teacher-students-list');
-            if (studentsCountBadge) studentsCountBadge.innerText = cachedStudents.length;
-            if (teacherStudentsList) {
-                teacherStudentsList.innerHTML = cachedStudents.length === 0 ? `<p class="text-xs text-slate-500 text-center py-2">لا توجد طلاب مسجلين بعد.</p>` : '';
-                cachedStudents.forEach(s => {
-                    teacherStudentsList.innerHTML += `
-                        <div class="bg-slate-900/70 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs text-right">
-                            <span class="text-neonBlue">${s.grade}</span>
-                            <span class="text-white font-bold">${s.fullname} (${s.username})</span>
-                        </div>
-                    `;
-                });
-            }
+        function selectActiveLesson(index) {
+            const lesson = cachedLessons[index];
+            if (!lesson) return;
+            document.getElementById('active-lesson-container').innerHTML = `
+                <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800">
+                    <iframe src="${lesson.video_data}" class="w-full h-full" allowfullscreen></iframe>
+                </div>
+                <h4 class="font-extrabold text-white text-lg">${lesson.title}</h4>
+            `;
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
             await fetchInitialData();
-            loadStudentExam();
-            loadTeacherQuestions();
         });
     </script>
 </body>
